@@ -6,7 +6,7 @@
   <title>Hoang Hai — Creative Strategist</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@800;900&family=Work+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@800;900&family=Work+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
   <style>
     :root {
       --ease-out:   cubic-bezier(0.23, 1, 0.32, 1);
@@ -435,7 +435,7 @@
     /* ─── HERO + SKY SCENE ─── */
     /* One pinned panel: #skyOuter is tall to give scroll distance, the
        .stack-panel inside sticks for the whole run (see JS for the timeline). */
-    .sky-outer { height: 560svh; }
+    .sky-outer { height: 420svh; }
 
     /* reduced motion still pins (the script swaps stills instead of scrubbing
        frames), so opt this panel back out of the global un-pin rule */
@@ -788,8 +788,9 @@
       position: relative;
       display: block;
       width: 100%;
-      aspect-ratio: 5 / 4.4;
-      min-height: 270px;
+      /* fixed height, not a ratio: a ratio grew the folder with screen width
+         and left the opened sheet half empty on wide screens */
+      height: 360px;
       padding: 0;
       border: 0;
       background: none;
@@ -879,13 +880,56 @@
       background: color-mix(in srgb, var(--sf-bg) 28%, transparent);
     }
 
-    .sfolder-desc {
-      font-size: 14.5px;
-      line-height: 1.6;
-      color: #333333;
+    /* opened sheet: deliverables as small brutalist boxes, claim underneath */
+    .sfolder-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: 0;
       opacity: 0;
       transition: opacity 260ms var(--ease-out);
     }
+    .sf-boxes { display: flex; flex-direction: column; gap: 6px; }
+    .sf-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border: 2px solid #0A0A0A;
+      font-family: var(--f-display);
+      font-size: 15px;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+      color: #0A0A0A;
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    .sf-box i {
+      font-style: normal;
+      font-family: var(--f-mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--sf-acc);
+    }
+    .sf-note {
+      font-family: var(--f-mono);
+      font-size: 11px;
+      line-height: 1.5;
+      letter-spacing: 0.02em;
+      color: #555555;
+    }
+    .sf-claim {
+      margin-top: 4px;
+      padding: 2px 0 2px 12px;
+      border-left: 4px solid var(--sf-acc);
+      font-size: 16.5px;
+      font-weight: 600;
+      line-height: 1.45;
+      color: #0A0A0A;
+      text-wrap: pretty;
+    }
+    .sf-claim b { font-weight: 700; color: var(--sf-acc); }
 
     .sfolder-front {
       position: absolute;
@@ -947,12 +991,21 @@
     .sfolder.is-open .sfolder-back  { transform: translateY(8%); opacity: 0; }
     .sfolder.is-open .sfolder-paper {
       left: 0; right: 0; top: 0;
+      padding: 18px 18px 20px;
       box-shadow: 0 18px 40px oklch(0% 0 0 / 0.14);
     }
-    .sfolder.is-open .sfolder-desc { opacity: 1; transition-delay: 180ms; }
+    .sfolder.is-open .sfolder-body { opacity: 1; transition-delay: 180ms; }
+    .sfolder.is-open .sf-box {
+      opacity: 1;
+      transform: none;
+      transition:
+        opacity   360ms var(--ease-out),
+        transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
+      transition-delay: calc(260ms + var(--k) * 70ms);
+    }
 
     @media (prefers-reduced-motion: reduce) {
-      .sfolder, .sfolder-back, .sfolder-front, .sfolder-paper, .sfolder-desc { transition-duration: 1ms !important; transition-delay: 0ms !important; }
+      .sfolder, .sfolder-back, .sfolder-front, .sfolder-paper, .sfolder-body, .sf-box { transition-duration: 1ms !important; transition-delay: 0ms !important; }
     }
 
     /* Tools */
@@ -1690,7 +1743,7 @@
         grid-template-columns: 1fr;
         gap: 28px;
       }
-      .sfolder { aspect-ratio: auto; min-height: 250px; }
+      .sfolder { height: 350px; }
 
       /* Tools */
       .tools-row {
@@ -3047,8 +3100,7 @@
       content: '';
       position: absolute;
       inset: -80px;
-      transform: translate3d(0, calc(var(--sp, 0) * -640px), 0);
-      will-change: transform;
+      transition: opacity 200ms linear;
       -webkit-mask-image: radial-gradient(120% 90% at 50% 40%, #000 30%, transparent 85%);
       mask-image: radial-gradient(120% 90% at 50% 40%, #000 30%, transparent 85%);
     }
@@ -3338,6 +3390,296 @@
     /* Vietnamese text set in the display face: swap to Archivo 900 so
        diacritics come from the same design instead of a fallback font */
     .pbox-quote p:lang(vi) { font-family: var(--f-display-vi); font-weight: 900; }
+
+    /* ─── HERO on the dot grid ─── */
+    .bg-field[data-hero="on"]::before { opacity: 0; }
+
+    .sky-scene { background: transparent; }
+    .scene-dots {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+      transition: opacity 200ms linear;
+    }
+    .sd-base, .sd-glow {
+      position: absolute;
+      inset: -80px;                 /* same box as the global grid → same dot positions */
+      background-size: 24px 24px;
+      transform: scale(var(--s, 1));
+      transform-origin: 50% 50%;
+      will-change: transform;
+    }
+    .sd-base {
+      background-image: radial-gradient(rgb(255 255 255 / 0.16) 1px, transparent 1.6px);
+      -webkit-mask-image: radial-gradient(120% 90% at 50% 40%, #000 30%, transparent 85%);
+      mask-image: radial-gradient(120% 90% at 50% 40%, #000 30%, transparent 85%);
+    }
+    /* orange dots, only around the cursor */
+    .sd-glow {
+      background-image: radial-gradient(rgb(232 80 2 / 1) 1.3px, transparent 1.9px);
+      -webkit-mask-image: radial-gradient(200px 200px at var(--gx, 50%) var(--gy, 42%), #000 0%, transparent 100%);
+      mask-image: radial-gradient(200px 200px at var(--gx, 50%) var(--gy, 42%), #000 0%, transparent 100%);
+      opacity: 0.35;
+      transition: opacity 400ms var(--ease-out);
+    }
+    .scene-dots.has-pointer .sd-glow { opacity: 0.95; }
+
+    .sky-scene .hero-overlay { display: none; }
+
+    /* editorial headline block, top-left */
+    .sky-scene .hero-headline-wrap {
+      align-items: stretch;
+      padding: 96px 56px 0;
+    }
+    .hero-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      padding-bottom: 12px;
+      margin-bottom: 14px;
+      border-bottom: 1px solid rgb(255 255 255 / 0.14);
+      font-family: var(--f-mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #A7A7A7;
+      opacity: 0;
+      animation: entryA 600ms var(--ease-out) 80ms forwards;
+    }
+    .sky-scene .hero-headline {
+      white-space: normal;
+      text-align: left;
+      margin-bottom: 22px;
+      text-shadow: none;
+      font-size: clamp(44px, 9.4vw, 170px);
+      line-height: 0.92;
+      letter-spacing: -0.035em;
+      color: var(--ink);
+    }
+    .hl-line {
+      display: block;
+      text-transform: uppercase;
+      transform-origin: 0 60%;
+      will-change: transform, opacity;
+    }
+    .hl-ital {
+      font-family: var(--f-body);
+      font-style: italic;
+      font-weight: 300;
+      text-transform: none;
+      letter-spacing: -0.045em;
+    }
+    .hl-2 { font-size: 1.04em; line-height: 0.98; }
+    .hl-acc { color: var(--c-orange); }
+    .sky-scene .hero-subheadline {
+      max-width: 560px;
+      text-align: left;
+      font-style: italic;
+      font-weight: 300;
+      font-size: clamp(16px, 1.35vw, 20px);
+      line-height: 1.5;
+      color: #BDBDBD;
+      text-shadow: none;
+    }
+
+    /* bigger name, bottom-left */
+    .sky-scene .hero-title {
+      font-size: clamp(40px, 4.6vw, 78px);
+      line-height: 0.95;
+      letter-spacing: -0.035em;
+      margin-bottom: 12px;
+    }
+
+    /* the paragraph now sits centred on the grid */
+    .sky-scene .problems-list {
+      inset: 0;
+      align-items: center;
+      padding: 0 24px;
+    }
+
+    @media (max-width: 768px) {
+      .sky-scene .hero-headline-wrap { padding: 104px 20px 0; }
+      .hero-meta span:last-child { display: none; }
+      .sky-scene .hero-headline { font-size: clamp(40px, 13.5vw, 64px); }
+      .sky-scene .hero-title { font-size: 40px; }
+    }
+
+    /* ─── PROBLEM STATEMENT: props + CTA ─── */
+    .sky-scene .problems-list { flex-direction: column; }
+    .problems-inner {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 34px;
+    }
+    .sky-scene .problem-paragraph { font-size: clamp(18px, 1.9vw, 32px); max-width: 1000px; }
+
+    .problem-paragraph .word.key {
+      padding: 0 0.12em;
+      margin: 0 -0.12em;
+      background: linear-gradient(var(--c-orange), var(--c-orange)) no-repeat 0 55% / 0% 88%;
+      transition: color 400ms var(--ease-out), background-size 520ms var(--ease-draw);
+    }
+    .problem-paragraph .word.key.lit { background-size: 100% 88%; color: #F9F9F9; }
+
+    .prob-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 26px;
+      background: var(--c-orange);
+      color: #F9F9F9;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      opacity: 0;
+      transform: translateY(14px);
+      transition: opacity 400ms var(--ease-out), transform 600ms cubic-bezier(0.22, 1, 0.36, 1), background 180ms ease-out;
+      pointer-events: none;
+    }
+    .prob-cta.on { opacity: 1; transform: none; pointer-events: auto; }
+    .prob-cta:hover { background: var(--c-rust); }
+    .prob-cta span { transition: transform 200ms var(--ease-out); }
+    .prob-cta:hover span { transform: translateX(4px); }
+
+    .prob-deco { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+    .deco {
+      position: absolute;
+      opacity: 0;
+      transform: translateY(18px) scale(0.94);
+      transition: opacity 420ms var(--ease-out), transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .deco.on { opacity: 1; transform: none; }
+
+    /* mini folders that open */
+    .deco-folder { width: 210px; height: 150px; perspective: 700px; }
+    .df-a { left: 6%; top: 15%; }
+    .df-b { right: 6%; bottom: 12%; }
+    .df-back {
+      position: absolute; inset: 20px 0 0 0;
+      background: color-mix(in srgb, var(--f) 72%, #000);
+      border-radius: 0 16px 16px 16px;
+    }
+    .df-back::before {
+      content: ''; position: absolute; bottom: calc(100% - 1px); left: 0;
+      width: 38%; height: 20px; background: inherit; border-radius: 12px 0 0 0;
+    }
+    .df-back::after {
+      content: ''; position: absolute; bottom: calc(100% - 1px); left: calc(38% - 1px);
+      width: 28px; height: 20px; background: inherit;
+      clip-path: path('M0 0 C 13 0 15 20 28 20 L 0 20 Z');
+    }
+    .df-paper {
+      position: absolute; left: 8%; right: 8%; top: 44px; height: 90px;
+      padding: 9px 11px; border-radius: 10px;
+      background: #FFFFFF; color: #0A0A0A;
+      font-family: var(--f-mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase;
+      transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1) 250ms;
+    }
+    .deco-folder.on .df-paper { transform: translateY(-44px) rotate(-3deg); }
+    .df-front {
+      position: absolute; left: 0; right: 0; bottom: 0; top: 58px;
+      display: flex; flex-direction: column; justify-content: flex-end; gap: 4px;
+      padding: 12px 14px; border-radius: 16px;
+      border: 1px solid rgb(255 255 255 / 0.3);
+      background: linear-gradient(180deg, color-mix(in srgb, var(--f) 70%, #fff), var(--f) 60%);
+      color: #F9F9F9;
+      font-family: var(--f-display); font-size: 14px; letter-spacing: -0.01em;
+      transform-origin: 50% 100%;
+      transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1) 250ms;
+    }
+    .df-front i { font-style: normal; font-family: var(--f-mono); font-size: 10px; opacity: 0.75; }
+    .deco-folder.on .df-front { transform: rotateX(-16deg); }
+
+    /* selection box dragged into place */
+    .deco-sel { right: 8%; top: 17%; }
+    .ds-item {
+      position: relative; display: inline-block;
+      transform: translate(-70px, 46px) rotate(-3deg);
+      transition: transform 820ms var(--ease-drag) 700ms;
+    }
+    .deco-sel.on .ds-item { transform: none; }
+    .ds-chip {
+      display: inline-block; padding: 10px 16px;
+      background: #F9F9F9; color: #0A0A0A;
+      font-family: var(--f-display); font-size: 15px; letter-spacing: -0.01em;
+    }
+    .ds-box {
+      position: absolute; inset: -6px;
+      border: 1.5px solid var(--c-orange);
+      clip-path: inset(0 100% 100% 0);
+      transition: clip-path 520ms var(--ease-draw) 250ms;
+    }
+    .deco-sel.on .ds-box { clip-path: inset(-12px); }
+    .ds-box i {
+      position: absolute; width: 8px; height: 8px;
+      background: #0A0A0A; border: 1.5px solid var(--c-orange);
+      transform: translate(-50%, -50%) scale(0);
+      transition: transform 360ms var(--ease-pop) 600ms;
+    }
+    .deco-sel.on .ds-box i { transform: translate(-50%, -50%) scale(1); }
+    .ds-box i:nth-child(1) { left: 0; top: 0; }       .ds-box i:nth-child(2) { left: 50%; top: 0; }
+    .ds-box i:nth-child(3) { left: 100%; top: 0; }    .ds-box i:nth-child(4) { left: 100%; top: 50%; }
+    .ds-box i:nth-child(5) { left: 100%; top: 100%; } .ds-box i:nth-child(6) { left: 50%; top: 100%; }
+    .ds-box i:nth-child(7) { left: 0; top: 100%; }    .ds-box i:nth-child(8) { left: 0; top: 50%; }
+    .ds-cursor {
+      position: absolute; right: -24px; bottom: -28px; width: 24px; height: 24px;
+      opacity: 0; transition: opacity 250ms var(--ease-out) 550ms;
+    }
+    .deco-sel.on .ds-cursor { opacity: 1; animation: dsCursorOut 400ms var(--ease-out) 1900ms forwards; }
+    @keyframes dsCursorOut { to { opacity: 0; transform: translate(8px, 10px); } }
+
+    /* pen-tool bezier */
+    .deco-pen { left: 5%; bottom: 14%; width: min(30vw, 360px); height: 130px; }
+    .deco-pen svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+    .dp-path {
+      fill: none; stroke: var(--c-orange); stroke-width: 2.5; stroke-linecap: round;
+      vector-effect: non-scaling-stroke;
+      stroke-dasharray: 1; stroke-dashoffset: 1;
+      transition: stroke-dashoffset 1100ms var(--ease-draw) 150ms;
+    }
+    .deco-pen.on .dp-path { stroke-dashoffset: 0; }
+    .dp-handle {
+      stroke: rgb(255 255 255 / 0.5); stroke-width: 1; vector-effect: non-scaling-stroke;
+      opacity: 0; transition: opacity 300ms var(--ease-out) 900ms;
+    }
+    .deco-pen.on .dp-handle { opacity: 1; }
+    .deco-pen b, .deco-pen u {
+      position: absolute; width: 9px; height: 9px;
+      background: #0A0A0A; border: 1.5px solid #F9F9F9;
+      transform: translate(-50%, -50%) scale(0);
+      transition: transform 360ms var(--ease-pop) 1000ms;
+    }
+    .deco-pen u { border-radius: 50%; width: 7px; height: 7px; text-decoration: none; }
+    .deco-pen.on b, .deco-pen.on u { transform: translate(-50%, -50%) scale(1); }
+    .dp-label {
+      position: absolute; right: 0; bottom: -26px;
+      font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.06em; color: #A7A7A7;
+    }
+
+    /* layer-style tags */
+    .deco-tag {
+      padding: 6px 12px;
+      border: 1px dashed rgb(255 255 255 / 0.35);
+      font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.06em;
+      color: #BDBDBD; background: rgb(10 10 10 / 0.6);
+    }
+    .dt-1 { left: 27%; top: 24%; }
+    .dt-2 { right: 26%; bottom: 20%; }
+    .dt-3 { left: 40%; bottom: 7%; color: var(--c-orange); border-color: rgb(232 80 2 / 0.6); }
+
+    @media (max-width: 900px) {
+      .prob-deco { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .deco, .deco *, .prob-cta { transition-duration: 1ms !important; transition-delay: 0ms !important; animation: none !important; }
+    }
   </style>
 </head>
 <body>
@@ -3354,21 +3696,34 @@
   </div>
 </nav>
 
-<!-- HERO + SKY: one pinned scene. Starts on the hillside still, scroll
-     scrubs the camera tilt up into the sky, then the problem statement
-     lights up word by word in the stars. -->
+<!-- HERO: one pinned scene on the site's dot-grid. Scrolling flies into
+     the grid (dots zoom), the headline splits apart, then the problem
+     statement lights up word by word. The grid settles back to scale 1 at
+     the end so it hands off seamlessly to the page background. -->
 <div class="stack-outer sky-outer" id="skyOuter">
-<div class="stack-panel" style="z-index:1; background:var(--bg);">
+<div class="stack-panel" style="z-index:1; background:transparent;">
 <section class="hero sky-scene" id="problems">
 
-  <div class="hero-bg" aria-hidden="true">
-    <img class="sky-still" src="assets/sky-start.webp" alt="" fetchpriority="high" />
-    <canvas class="sky-canvas" id="skyCanvas"></canvas>
+  <div class="scene-dots" id="sceneDots" aria-hidden="true">
+    <div class="sd-base"></div>
+    <div class="sd-glow"></div>
   </div>
 
-  <!-- everything hero fades out together as the camera starts to move -->
   <div class="hero-fg" id="heroFg">
-    <div class="hero-overlay" aria-hidden="true"></div>
+    <div class="hero-headline-wrap">
+      <div class="hero-meta" id="heroMeta">
+        <span>Creative Strategist · Copywriter · Video Producer</span>
+        <span>Portfolio — 2026</span>
+      </div>
+
+      <h2 class="hero-headline tfx" data-tfx-auto>
+        <span class="hl-line hl-1"><span class="tfx-sel">Where</span> an idea</span>
+        <span class="hl-line hl-2 hl-ital"><span class="tfx-hl">rises</span> out of</span>
+        <span class="hl-line hl-3">the <span class="hl-ital hl-acc tfx-dash">noise.</span></span>
+      </h2>
+
+      <p class="hero-subheadline">Every brand already has a story worth telling, buried in what its customers worry about but never say out loud. My job is finding it before the noise does.</p>
+    </div>
 
     <div class="hero-content">
       <h1 class="hero-title">HOANG HAI</h1>
@@ -3389,11 +3744,6 @@
       </div>
     </div>
 
-    <div class="hero-headline-wrap">
-      <h2 class="hero-headline tfx" data-tfx-auto><span class="em-strong tfx-sel">Where</span> <span class="em-light">an idea</span> <span class="em-strong tfx-hl">rises</span> <span class="em-light tfx-dash">out of the noise</span></h2>
-      <p class="hero-subheadline">Every brand already has a story worth telling, buried in what its customers worry about but never say out loud. My job is finding it before the noise does.</p>
-    </div>
-
     <div class="scroll-hint" aria-hidden="true">
       <span class="scroll-label">Scroll</span>
       <div class="scroll-bar"></div>
@@ -3401,7 +3751,49 @@
   </div>
 
   <div class="problems-list" id="problemsList">
-    <p class="problem-paragraph" id="problemParagraph">Meta's Andromeda update merges ads that look alike, so two tests quietly become one and both lose reach. Most accounts still run a handful of ads a month and run out of new angles fast. Even a well-made ad can get marked not relevant, and plenty of content gets watched and liked without ever selling anything. That's the list I've spent the last 3 years actually solving, not just diagnosing.</p>
+    <!-- design-tool props around the statement; each switches on at its own
+         scroll point (data-at, 0→1 through the scene) -->
+    <div class="prob-deco" aria-hidden="true">
+      <div class="deco deco-folder df-a" data-at="0.34" style="--f:var(--c-orange)">
+        <span class="df-back"></span>
+        <span class="df-paper">Brief_v3 · research</span>
+        <span class="df-front"><i>01</i>Customer brief</span>
+      </div>
+
+      <div class="deco deco-sel" data-at="0.44">
+        <span class="ds-item">
+          <span class="ds-chip">Angle Matrix — 20 angles</span>
+          <span class="ds-box"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+          <svg class="ds-cursor" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 2 L4 19 L8.5 14.8 L11.6 21.6 L14.3 20.4 L11.3 13.7 L17.5 13.4 Z" fill="#0A0A0A" stroke="#F9F9F9" stroke-width="1.4" stroke-linejoin="round"/></svg>
+        </span>
+      </div>
+
+      <div class="deco deco-pen" data-at="0.52">
+        <svg viewBox="0 0 320 130" preserveAspectRatio="none">
+          <line class="dp-handle" x1="12" y1="104" x2="96" y2="10"/>
+          <line class="dp-handle" x1="306" y1="30" x2="214" y2="128"/>
+          <path class="dp-path" pathLength="1" d="M12 104 C 96 10, 214 128, 306 30"/>
+        </svg>
+        <b style="left:3.75%;top:80%"></b><u style="left:30%;top:7.7%"></u>
+        <u style="left:66.9%;top:98.5%"></u><b style="left:95.6%;top:23%"></b>
+        <span class="dp-label">reach ↘ after merge</span>
+      </div>
+
+      <div class="deco deco-folder df-b" data-at="0.62" style="--f:var(--c-dark)">
+        <span class="df-back"></span>
+        <span class="df-paper">Ad set 04 · 12 variants</span>
+        <span class="df-front"><i>02</i>Creative tests</span>
+      </div>
+
+      <span class="deco deco-tag dt-1" data-at="0.4">#andromeda</span>
+      <span class="deco deco-tag dt-2" data-at="0.58">#creative_fatigue</span>
+      <span class="deco deco-tag dt-3" data-at="0.7">layer: not_relevant</span>
+    </div>
+
+    <div class="problems-inner">
+      <p class="problem-paragraph" id="problemParagraph">Meta's Andromeda update merges ads that look alike, so two tests quietly become one and both lose reach. Most accounts still run a handful of ads a month and run out of new angles fast. Even a well-made ad can get marked not relevant, and plenty of content gets watched and liked without ever selling anything. That's the list I've spent the last 3 years actually solving, not just diagnosing.</p>
+      <a href="#projects" class="prob-cta" id="probCta">See how I address this <span aria-hidden="true">→</span></a>
+    </div>
   </div>
 
 </section>
@@ -3409,78 +3801,55 @@
 </div>
 
 <script>
-  /* Sky scene: scroll progress through #skyOuter drives, in order,
-     hero fade-out → camera tilt (frame sequence on a canvas) → the problem
-     paragraph fading in and lighting up word by word, then a short hold. */
+  /* Hero scene: scroll progress through #skyOuter drives
+     dots zoom (in, then back to 1) · headline split + fade ·
+     problem paragraph fade-in + word-by-word light-up.
+     Pointer position lights the dots up in orange around the cursor. */
   (function () {
     const outer  = document.getElementById('skyOuter');
     const heroFg = document.getElementById('heroFg');
     const list   = document.getElementById('problemsList');
     const para   = document.getElementById('problemParagraph');
-    const canvas = document.getElementById('skyCanvas');
-    const ctx    = canvas.getContext('2d');
+    const dots   = document.getElementById('sceneDots');
+    const field  = document.querySelector('.bg-field');
+    const lines  = heroFg.querySelectorAll('.hl-line');
+    const fadeEls = heroFg.querySelectorAll('.hero-meta, .hero-subheadline, .hero-content, .scroll-hint');
 
-    para.innerHTML = para.textContent
-      .split(' ')
-      .map(w => `<span class="word">${w}</span>`)
+    // key phrases get a highlight block once they light up
+    const KEYS = ['merges ads that look alike', 'run out of new angles fast.', 'marked not relevant,', 'without ever selling anything.'];
+    const text = para.textContent;
+    const keyIdx = new Set();
+    let pos = 0;
+    const tokens = text.split(' ').map(w => { const t = { w, start: pos }; pos += w.length + 1; return t; });
+    KEYS.forEach(k => {
+      const at = text.indexOf(k);
+      if (at < 0) return;
+      tokens.forEach((t, i) => { if (t.start >= at && t.start < at + k.length) keyIdx.add(i); });
+    });
+    para.innerHTML = tokens
+      .map((t, i) => `<span class="word${keyIdx.has(i) ? ' key' : ''}">${t.w}</span>`)
       .join(' ');
     const words = para.querySelectorAll('.word');
+    const deco = document.querySelectorAll('.prob-deco .deco');
+    const cta = document.getElementById('probCta');
 
     const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const FRAME_COUNT = 121;
-    // phones get every other frame: half the download, still smooth under a thumb
-    const step = innerWidth < 768 ? 2 : 1;
-    const frames = [];      // index → HTMLImageElement (only the ones we load)
-    const endImg = new Image();
-    endImg.src = 'assets/sky-end.webp';
-    const startImg = document.querySelector('.sky-still');
-
     const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
     const range = (p, from, to) => clamp((p - from) / (to - from));
+    const ease  = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; // cubic in-out
 
-    function loadFrames() {
-      if (reduceMotion) return;
-      for (let i = 0; i < FRAME_COUNT; i += step) {
-        const img = new Image();
-        img.decoding = 'async';
-        img.src = `assets/sky-frames/f${String(i + 1).padStart(3, '0')}.webp`;
-        img.onload = () => { if (Math.abs(i - currentIndex) <= step) draw(); };
-        frames[i] = img;
-      }
-    }
+    let scale = 1;
+    let pointer = null;
 
-    function sizeCanvas() {
-      const dpr = Math.min(devicePixelRatio || 1, 1.5);
-      canvas.width  = Math.round(canvas.clientWidth * dpr);
-      canvas.height = Math.round(canvas.clientHeight * dpr);
-    }
-
-    // object-fit: cover, drawn by hand
-    function cover(img) {
-      const cw = canvas.width, ch = canvas.height;
-      const iw = img.naturalWidth, ih = img.naturalHeight;
-      const s = Math.max(cw / iw, ch / ih);
-      const w = iw * s, h = ih * s;
-      ctx.drawImage(img, (cw - w) / 2, (ch - h) / 2, w, h);
-    }
-
-    // nearest already-loaded frame at or before i (falls back forward)
-    function frameAt(i) {
-      for (let k = i; k >= 0; k--) if (frames[k]?.complete && frames[k].naturalWidth) return frames[k];
-      for (let k = i; k < FRAME_COUNT; k++) if (frames[k]?.complete && frames[k].naturalWidth) return frames[k];
-      return null;
-    }
-
-    let currentIndex = 0;
-    let videoT = 0;
-
-    function draw() {
-      let img;
-      if (videoT <= 0) img = startImg;
-      else if (videoT >= 1 && endImg.complete && endImg.naturalWidth) img = endImg;
-      else if (reduceMotion) img = videoT < 0.5 ? startImg : endImg;
-      else img = frameAt(currentIndex) || startImg;
-      if (img && img.complete && img.naturalWidth) cover(img);
+    function placeGlow() {
+      // mask coords live in the scaled layer's own space (layer = viewport + 80px each side)
+      const W = innerWidth + 160, H = innerHeight + 160;
+      const mx = pointer ? pointer[0] : innerWidth * 0.5;
+      const my = pointer ? pointer[1] : innerHeight * 0.42;
+      const x = W / 2 + (mx + 80 - W / 2) / scale;
+      const y = H / 2 + (my + 80 - H / 2) / scale;
+      dots.style.setProperty('--gx', x + 'px');
+      dots.style.setProperty('--gy', y + 'px');
     }
 
     function update() {
@@ -3489,39 +3858,51 @@
       if (scrollable <= 0) return;
       const p = clamp(-rect.top / scrollable);
 
-      // 1. hero copy + overlay fade out as soon as scrolling starts
-      const heroOut = range(p, 0.02, 0.12);
-      heroFg.style.opacity = 1 - heroOut;
-      heroFg.style.transform = `translateY(${-heroOut * 40}px)`;
-      heroFg.style.visibility = heroOut >= 1 ? 'hidden' : '';
+      // global dots hide while the scene's own (zooming) dots are on screen
+      const inScene = p < 1 && rect.bottom > 0;
+      field.dataset.hero = inScene ? 'on' : 'off';
+      dots.style.opacity = inScene ? 1 : 0;
 
-      // 2. camera tilts up into the sky
-      videoT = range(p, 0.06, 0.50);
-      const idx = Math.round(videoT * (FRAME_COUNT - 1));
-      const snapped = Math.min(Math.round(idx / step) * step, FRAME_COUNT - 1);
-      if (snapped !== currentIndex || videoT <= 0 || videoT >= 1) {
-        currentIndex = snapped;
-        draw();
+      // 1. fly into the grid and back out, landing at exactly 1 for the hand-off
+      scale = reduceMotion ? 1 : 1 + 1.7 * Math.sin(Math.PI * ease(range(p, 0, 0.96)));
+      dots.style.setProperty('--s', scale.toFixed(4));
+      placeGlow();
+
+      // 2. headline splits: line 1 left, line 3 right, line 2 swells, then all fade
+      const split = ease(range(p, 0.02, 0.3));
+      if (!reduceMotion) {
+        lines[0].style.transform = `translate3d(${-split * 38}vw, 0, 0)`;
+        lines[1].style.transform = `scale(${1 + split * 0.35})`;
+        lines[2].style.transform = `translate3d(${split * 38}vw, 0, 0)`;
       }
+      const out = range(p, 0.06, 0.28);
+      lines.forEach(l => l.style.opacity = 1 - out);
+      fadeEls.forEach(el => el.style.opacity = 1 - range(p, 0.02, 0.14));
+      heroFg.style.visibility = out >= 1 ? 'hidden' : '';
 
-      // 3. paragraph appears in the sky, then lights up word by word
-      const paraIn = range(p, 0.50, 0.56);
+      // 3. problem paragraph
+      const paraIn = range(p, 0.3, 0.38);
       list.style.opacity = paraIn;
       list.style.transform = `translateY(${(1 - paraIn) * 24}px)`;
-      const lit = reduceMotion ? words.length : Math.round(range(p, 0.54, 0.90) * words.length);
+      const lit = reduceMotion ? words.length : Math.round(range(p, 0.36, 0.86) * words.length);
       words.forEach((w, i) => w.classList.toggle('lit', i < lit));
+
+      // 4. props around it, then the CTA once the statement is fully lit
+      deco.forEach(d => d.classList.toggle('on', p >= +d.dataset.at));
+      const ctaOn = p >= 0.84;
+      cta.classList.toggle('on', ctaOn);
+      list.style.pointerEvents = ctaOn && p < 1 ? 'auto' : 'none';
     }
 
-    function resize() { sizeCanvas(); draw(); update(); }
-
+    addEventListener('pointermove', e => {
+      if (e.pointerType === 'touch') return;
+      pointer = [e.clientX, e.clientY];
+      dots.classList.add('has-pointer');
+      placeGlow();
+    }, { passive: true });
     addEventListener('scroll', update, { passive: true });
-    addEventListener('resize', resize);
-    startImg.complete ? resize() : startImg.addEventListener('load', resize);
-    endImg.addEventListener('load', () => { if (videoT >= 1) draw(); });
-    // don't compete with the first paint for bandwidth
-    if (document.readyState === 'complete') loadFrames();
-    else addEventListener('load', loadFrames);
-    resize();
+    addEventListener('resize', update);
+    update();
   })();
 </script>
 
@@ -3539,7 +3920,7 @@
         <span>Curious.</span>
       </p>
       <p class="about-bio">In three words, I am strategic, creative and curious. A creative professional with 3+ years of experience in content, visual storytelling and creative production. I am passionate about turning audience insights into creative ideas and meaningful brand experiences. Over the next two years, I aim to grow into a skilled Creative Strategist who can connect audience insights, creative thinking and business objectives to develop impactful brand communication.</p>
-      <a href="#work" class="btn-cta">See my work →</a>
+      <a href="#projects" class="btn-cta">See my work →</a>
     </div>
 
     <!-- big stacked name, parked where the figure stops so he ends up in front of it -->
@@ -3567,11 +3948,15 @@
   <h2 class="services-heading tfx">What I <span class="tfx-hl">Bring</span></h2>
 
   <div class="services-grid">
-    <button type="button" class="sfolder" aria-expanded="false" style="--sf-bg:var(--c-orange); --sf-fg:var(--c-cream);">
+    <button type="button" class="sfolder" aria-expanded="false" style="--sf-bg:var(--c-orange); --sf-fg:var(--c-cream); --sf-acc:var(--c-orange);">
       <span class="sfolder-back" aria-hidden="true"></span>
       <span class="sfolder-paper">
         <span class="sfolder-paper-head"><span>01 · Strategy &amp; angles</span><span>Research</span></span>
-        <span class="sfolder-desc">Customer research, the Angle Matrix, and content calendars built on what your customers actually worry about. One brief in, 20 angles and scripts out within a week.</span>
+        <span class="sfolder-body">
+          <span class="sf-boxes"><span class="sf-box" style="--k:0"><i>01</i>Customer research</span><span class="sf-box" style="--k:1"><i>02</i>The Angle Matrix</span><span class="sf-box" style="--k:2"><i>03</i>Content calendars</span></span>
+          <span class="sf-note">Built on what customers actually worry about</span>
+          <span class="sf-claim">One brief in, <b>20 angles and scripts</b> out within a week.</span>
+        </span>
       </span>
       <span class="sfolder-front" aria-hidden="true">
         <span class="sfolder-num">01</span>
@@ -3579,11 +3964,15 @@
         <span class="sfolder-cta">Click here <span aria-hidden="true">↗</span></span>
       </span>
     </button>
-    <button type="button" class="sfolder" aria-expanded="false" style="--sf-bg:var(--c-sand); --sf-fg:var(--c-forest);">
+    <button type="button" class="sfolder" aria-expanded="false" style="--sf-bg:var(--c-sand); --sf-fg:var(--c-forest); --sf-acc:#8A6A45;">
       <span class="sfolder-back" aria-hidden="true"></span>
       <span class="sfolder-paper">
         <span class="sfolder-paper-head"><span>02 · Copywriting &amp; scripts</span><span>Writing</span></span>
-        <span class="sfolder-desc">Ad and video scripts, advertorials, and quiz funnels, written in the words customers already use. One idea per piece, aimed at the objection standing between the viewer and the click. Samples are in the Strategy section below.</span>
+        <span class="sfolder-body">
+          <span class="sf-boxes"><span class="sf-box" style="--k:0"><i>01</i>Ad &amp; video scripts</span><span class="sf-box" style="--k:1"><i>02</i>Advertorials</span><span class="sf-box" style="--k:2"><i>03</i>Quiz funnels</span></span>
+          <span class="sf-note">In the words customers already use · samples in Selected Campaigns ↓</span>
+          <span class="sf-claim"><b>One idea per piece</b>, aimed at the objection between viewer and click.</span>
+        </span>
       </span>
       <span class="sfolder-front" aria-hidden="true">
         <span class="sfolder-num">02</span>
@@ -3591,11 +3980,15 @@
         <span class="sfolder-cta">Click here <span aria-hidden="true">↗</span></span>
       </span>
     </button>
-    <button type="button" class="sfolder" aria-expanded="false" style="--sf-bg:var(--c-rust); --sf-fg:var(--c-cream);">
+    <button type="button" class="sfolder" aria-expanded="false" style="--sf-bg:var(--c-rust); --sf-fg:var(--c-cream); --sf-acc:var(--c-rust);">
       <span class="sfolder-back" aria-hidden="true"></span>
       <span class="sfolder-paper">
         <span class="sfolder-paper-head"><span>03 · Funnels &amp; lead generation</span><span>Conversion</span></span>
-        <span class="sfolder-desc">Landing pages, quiz funnels, and follow-up that turn views into leads. One funnel I built brought in $100,000 in revenue over two months.</span>
+        <span class="sfolder-body">
+          <span class="sf-boxes"><span class="sf-box" style="--k:0"><i>01</i>Landing pages</span><span class="sf-box" style="--k:1"><i>02</i>Quiz funnels</span><span class="sf-box" style="--k:2"><i>03</i>Follow-up sequences</span></span>
+          <span class="sf-note">Turning views into leads</span>
+          <span class="sf-claim">One funnel I built brought in <b>$100,000</b> in revenue over two months.</span>
+        </span>
       </span>
       <span class="sfolder-front" aria-hidden="true">
         <span class="sfolder-num">03</span>
@@ -3603,11 +3996,15 @@
         <span class="sfolder-cta">Click here <span aria-hidden="true">↗</span></span>
       </span>
     </button>
-    <button type="button" class="sfolder" aria-expanded="false" style="--sf-bg:var(--c-dark); --sf-fg:var(--c-cream);">
+    <button type="button" class="sfolder" aria-expanded="false" style="--sf-bg:var(--c-dark); --sf-fg:var(--c-cream); --sf-acc:var(--c-orange);">
       <span class="sfolder-back" aria-hidden="true"></span>
       <span class="sfolder-paper">
         <span class="sfolder-paper-head"><span>04 · Video &amp; photo production</span><span>Production</span></span>
-        <span class="sfolder-desc">Filming, editing, and photography handled in-house, so an idea goes from script to published without a handoff.</span>
+        <span class="sfolder-body">
+          <span class="sf-boxes"><span class="sf-box" style="--k:0"><i>01</i>Filming</span><span class="sf-box" style="--k:1"><i>02</i>Editing</span><span class="sf-box" style="--k:2"><i>03</i>Photography</span></span>
+          <span class="sf-note">No handoff between idea and output</span>
+          <span class="sf-claim">All in-house, so an idea goes from <b>script to published</b> without a handoff.</span>
+        </span>
       </span>
       <span class="sfolder-front" aria-hidden="true">
         <span class="sfolder-num">04</span>
@@ -4893,6 +5290,18 @@
   // Lenis jumps (anchor links, scrollTo) don't always emit a native scroll
   // event in time, so re-sync the nav from Lenis' own scroll signal too
   lenis.on('scroll', syncNav);
+
+  // in-page links (#projects, #contact…): let Lenis do the scroll so it
+  // lands exactly, and leave room for the fixed nav
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a[href^="#"]');
+    if (!a || a.getAttribute('href').length < 2) return;
+    const target = document.querySelector(a.getAttribute('href'));
+    if (!target) return;
+    e.preventDefault();
+    lenis.scrollTo(target, { offset: -(nav.offsetHeight + 8) });
+    history.replaceState(null, '', a.getAttribute('href'));
+  });
 
   function raf(time) {
     lenis.raf(time);
