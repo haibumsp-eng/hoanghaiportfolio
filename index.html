@@ -1,0 +1,5020 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hoang Hai — Creative Strategist</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@800;900&family=Work+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ease-out:   cubic-bezier(0.23, 1, 0.32, 1);
+      --ease-inout: cubic-bezier(0.77, 0, 0.175, 1);
+      /* typography-fx curves */
+      --ease-draw:  cubic-bezier(0.65, 0.05, 0.36, 1);
+      --ease-pop:   cubic-bezier(0.34, 1.56, 0.64, 1);
+      --ease-drag:  cubic-bezier(0.7, 0, 0.2, 1);
+
+      /* Fonts (VoiceBox stack) */
+      --f-display: 'Archivo Black', Impact, 'Arial Black', sans-serif;
+      /* Archivo Black has no Vietnamese glyphs; Archivo 900 is the same design with them */
+      --f-display-vi: 'Archivo', 'Arial Black', sans-serif;
+      --f-body:    'Work Sans', -apple-system, 'Segoe UI', Helvetica, sans-serif;
+      --f-mono:    'Space Mono', 'Courier New', Consolas, monospace;
+
+      /* Palette */
+      --c-cream:  #F9F9F9;   /* white */
+      --c-sand:   #D9C3AB;   /* gradient 4 */
+      --c-sky:    #A7A7A7;   /* light gray */
+      --c-orange: #E85002;   /* branding orange */
+      --c-flame:  #F16001;   /* gradient 3 */
+      --c-rust:   #C10801;   /* gradient 2 */
+      --c-gray:   #646464;
+      --c-dark:   #333333;
+      --c-forest: #0A0A0A;   /* near-black text / ink */
+
+      /* backgrounds: the branding gradient, fixed to the viewport so
+         consecutive sections share one continuous field */
+      --bg-grad-dark:
+        radial-gradient(70% 60% at 88% 8%,  rgb(193 8 1 / 0.42) 0%, transparent 70%),
+        radial-gradient(60% 55% at 8% 96%,  rgb(241 96 1 / 0.26) 0%, transparent 70%),
+        linear-gradient(180deg, #000 0%, #0A0A0A 100%);
+      --bg-grad-light:
+        linear-gradient(180deg, #F9F9F9 0%, #F2EBE3 55%, #E4D3C1 100%);
+
+      /* roles */
+      --ink:   var(--c-cream);
+      --muted: #A7A7A7;
+      --amber: var(--c-orange);
+      --ink-dark:   var(--c-forest);
+      --muted-dark: #646464;
+      --bg:         #0A0A0A;
+      --surface:    #161616;
+      --surface-2:  #202020;
+      --border:     #333333;
+      --border-sub: #1C1C1C;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    /* Lenis (loaded at the end of body) drives smooth scrolling instead of
+       native CSS smooth-scroll, so anchor jumps and wheel/trackpad scroll
+       both ease the same way. */
+
+    html { background: #000; }
+
+    body {
+      font-family: var(--f-body);
+      background: transparent;
+      color: var(--ink);
+      overflow-x: hidden;
+    }
+
+    /* ─── STACKED PANELS ─── */
+    /* Each top-level section is pinned full-viewport; the next one slides
+       up over it as you scroll (a "cover" transition instead of everything
+       moving together). A section taller than one screen keeps its own
+       content reachable via native nested scroll inside .stack-scroll,
+       without breaking the outer cover effect. */
+    /* The sticky element's "release" bound is its own PARENT's box. Without
+       this wrapper, every .stack-panel shares <body> (the whole page) as
+       that parent, so none of them ever un-stick — they all stay pinned at
+       top:0 forever, which is why scrolling past one used to leave it stuck
+       on screen instead of handing off to the next section. */
+    .stack-outer {
+      height: 100svh;
+    }
+
+    .stack-panel {
+      position: sticky;
+      top: 0;
+      height: 100svh;
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    .stack-scroll {
+      height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .stack-scroll::-webkit-scrollbar { display: none; }
+
+    /* let a section shorter than one screen (e.g. Contact) still fill the
+       panel so it fully covers whatever is behind it */
+    .stack-scroll > * { min-height: 100%; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .stack-outer { height: auto; }
+      .stack-panel { position: relative; height: auto; overflow: visible; }
+      .stack-scroll { overflow: visible; height: auto; }
+    }
+
+    /* ─── NAV ─── */
+    .nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 32px 56px;
+      transition:
+        background   500ms var(--ease-out),
+        padding      500ms var(--ease-out),
+        border-color 500ms var(--ease-out);
+    }
+
+    .nav.is-solid {
+      background: rgb(10 10 10 / 0.72);
+      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgb(255 255 255 / 0.08);
+      padding: 20px 56px;
+    }
+
+    .nav-logo {
+      font-family: var(--f-display);
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      text-decoration: none;
+      transition: color 400ms var(--ease-out);
+    }
+
+    .nav.is-solid .nav-logo { color: var(--ink); }
+
+    .nav-links { display: flex; align-items: center; gap: 44px; }
+
+    .nav-link {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #C8C8C8;
+      text-decoration: none;
+      transition: color 280ms var(--ease-out), opacity 280ms var(--ease-out);
+    }
+
+    .nav.is-solid .nav-link { color: var(--ink); }
+    .nav-link:hover { opacity: 0.5; }
+    .nav-link:focus-visible { outline: 2px solid var(--amber); outline-offset: 4px; border-radius: 2px; }
+
+    /* ─── HERO ─── */
+    .hero {
+      position: relative;
+      width: 100%;
+      height: 100svh;
+      min-height: 640px;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+
+    .hero-bg img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 55% center;
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background:
+        linear-gradient(
+          108deg,
+          rgb(10 10 10 / 0.97) 0%,
+          rgb(10 10 10 / 0.84) 36%,
+          rgb(10 10 10 / 0.40) 60%,
+          rgb(10 10 10 / 0.08) 100%
+        ),
+        linear-gradient(
+          to top,
+          rgb(10 10 10 / 0.90) 0%,
+          rgb(10 10 10 / 0.18) 40%,
+          transparent 68%
+        ),
+        linear-gradient(
+          to bottom,
+          rgb(10 10 10 / 0.60) 0%,
+          transparent 24%
+        );
+    }
+
+    .hero-content {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      z-index: 10;
+      padding: 0 56px 82px;
+    }
+
+    .hero-tag {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 24px;
+      opacity: 0;
+      animation: entryA 680ms var(--ease-out) 55ms forwards;
+    }
+
+    /* Amber line draws in after the tag fades */
+    .hero-tag::before {
+      content: '';
+      display: block;
+      width: 24px;
+      height: 1px;
+      background: var(--amber);
+      flex-shrink: 0;
+      transform-origin: left center;
+      transform: scaleX(0);
+      animation: lineIn 500ms var(--ease-out) 340ms forwards;
+    }
+
+    .hero-title {
+      font-family: var(--f-display);
+      font-size: clamp(20px, 1.77vw, 26px);
+      line-height: 1.02;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      margin-bottom: 14px;
+      opacity: 0;
+      animation: entryB 960ms var(--ease-out) 155ms forwards;
+    }
+
+    .hero-sub {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 28px;
+      opacity: 0;
+      animation: entryA 680ms var(--ease-out) 310ms forwards;
+    }
+
+    /* ── Center headline ── */
+    /* separate flex wrapper handles centering so the entrance animation's
+       own transform (translateY slide-in) doesn't clobber a transform-based center */
+    .hero-headline-wrap {
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 20vh 24px 0;
+      pointer-events: none;
+    }
+
+    .hero-headline {
+      text-align: center;
+      white-space: nowrap; /* one line, no orphaned last word */
+      font-family: var(--f-display);
+      font-style: normal;
+      font-size: clamp(26px, 4.1vw, 66px);
+      line-height: 1.18;
+      letter-spacing: -0.03em;
+      margin-bottom: 24px;
+    }
+
+    .hero-headline .em-strong { color: var(--ink); }
+    .hero-headline .em-light  { color: #BDBDBD; }
+
+    .hero-subheadline {
+      max-width: 620px;
+      text-align: center;
+      font-family: var(--f-body);
+      font-size: clamp(15px, 1.15vw, 18px);
+      font-weight: 400;
+      line-height: 1.6;
+      letter-spacing: 0.01em;
+      text-wrap: pretty;
+      color: #B5B5B5;
+      opacity: 0;
+      animation: entryA 700ms var(--ease-out) 420ms forwards;
+    }
+
+    .hero-sub-word {
+      font-size: clamp(11px, 1.05vw, 14px);
+      font-weight: 300;
+      letter-spacing: 0.30em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .hero-sub-sep {
+      display: block;
+      width: 1px;
+      height: 16px;
+      background: rgb(232 80 2 / 0.45);
+      flex-shrink: 0;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      opacity: 0;
+      animation: entryA 680ms var(--ease-out) 420ms forwards;
+    }
+
+    .btn-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 15px 32px;
+      border: 1px solid rgb(249 249 249 / 0.20);
+      border-radius: 30px;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
+      background: transparent;
+      transition:
+        background     250ms var(--ease-out),
+        border-color   250ms var(--ease-out),
+        transform      120ms ease-out;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .btn-pill:hover {
+        background: rgb(249 249 249 / 0.07);
+        border-color: rgb(249 249 249 / 0.42);
+      }
+    }
+
+    .btn-pill:active { transform: scale(0.97); }
+    .btn-pill:focus-visible { outline: 2px solid var(--amber); outline-offset: 4px; border-radius: 30px; }
+
+    .btn-ghost {
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      padding-bottom: 3px;
+      border-bottom: 1px solid rgb(167 167 167 / 0.30);
+      transition:
+        color        250ms var(--ease-out),
+        border-color 250ms var(--ease-out);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .btn-ghost:hover { color: var(--ink); border-color: rgb(167 167 167 / 0.65); }
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 46px;
+      right: 56px;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      opacity: 0;
+      animation: entryA 680ms var(--ease-out) 760ms forwards;
+    }
+
+    .scroll-label {
+      font-size: 8px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: #646464;
+      writing-mode: vertical-rl;
+    }
+
+    .scroll-bar {
+      width: 1px;
+      height: 52px;
+      background: linear-gradient(to bottom, rgb(100 100 100 / 0.65), transparent);
+      animation: scrollPulse 2.5s ease-in-out 1.6s infinite;
+    }
+
+    /* ─── HERO KEYFRAMES ─── */
+    @keyframes entryA {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* blur focus-in on the hero title */
+    @keyframes entryB {
+      from { opacity: 0; transform: translateY(32px); filter: blur(8px); }
+      to   { opacity: 1; transform: translateY(0);    filter: blur(0);   }
+    }
+
+    /* amber line draw */
+    @keyframes lineIn {
+      from { transform: scaleX(0); }
+      to   { transform: scaleX(1); }
+    }
+
+    @keyframes scrollPulse {
+      0%, 100% { transform: scaleY(1);    opacity: 0.45; }
+      50%       { transform: scaleY(0.5); opacity: 1;    }
+    }
+
+    /* ─── HERO + SKY SCENE ─── */
+    /* One pinned panel: #skyOuter is tall to give scroll distance, the
+       .stack-panel inside sticks for the whole run (see JS for the timeline). */
+    .sky-outer { height: 560svh; }
+
+    /* reduced motion still pins (the script swaps stills instead of scrubbing
+       frames), so opt this panel back out of the global un-pin rule */
+    @media (prefers-reduced-motion: reduce) {
+      .sky-outer .stack-panel { position: sticky; height: 100svh; overflow: hidden; }
+    }
+
+    .sky-scene .hero-bg { background: #050505; }
+
+    .sky-scene .hero-bg img,
+    .sky-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+    }
+
+    .hero-fg {
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+      will-change: opacity, transform;
+    }
+
+    /* the photos are already dark; only shade where text sits */
+    .sky-scene .hero-overlay {
+      background:
+        linear-gradient(to top,    rgb(5 5 5 / 0.85) 0%, transparent 38%),
+        linear-gradient(to bottom, rgb(5 5 5 / 0.70) 0%, rgb(5 5 5 / 0.35) 22%, transparent 40%);
+    }
+
+    /* headline sits high in the sky, clear of the figure's head */
+    .sky-scene .hero-headline-wrap { padding-top: max(96px, 11vh); }
+    .sky-scene .hero-headline { margin-bottom: 16px; text-shadow: 0 2px 30px oklch(0% 0 0 / 0.55); }
+    .sky-scene .hero-headline .em-light { color: #BDBDBD; }
+    .sky-scene .hero-subheadline {
+      max-width: 560px;
+      color: rgb(249 249 249 / 0.92);
+      text-shadow: 0 1px 14px oklch(0% 0 0 / 0.85), 0 0 2px oklch(0% 0 0 / 0.6);
+    }
+
+    /* the paragraph lives in the upper sky of the final frame, above the figure */
+    .problems-list {
+      position: absolute;
+      inset: 0 0 auto;
+      z-index: 5;
+      display: flex;
+      justify-content: center;
+      padding: max(110px, 13vh) 24px 0;
+      opacity: 0;
+      pointer-events: none;
+      will-change: opacity, transform;
+    }
+
+    .problem-paragraph {
+      max-width: 980px;
+      text-align: center;
+      font-family: var(--f-display);
+      font-weight: 700;
+      font-size: clamp(17px, 1.8vw, 26px);
+      line-height: 1.5;
+      letter-spacing: -0.005em;
+      text-shadow: 0 2px 24px oklch(0% 0 0 / 0.6);
+    }
+
+    .problem-paragraph .word {
+      color: rgb(249 249 249 / 0.22);
+      transition: color 400ms var(--ease-out);
+    }
+
+    .problem-paragraph .word.lit {
+      color: #F9F9F9;
+    }
+
+    @media (max-width: 640px) {
+      .problem-paragraph { font-size: 16px; line-height: 1.5; }
+      .problems-list { padding-top: 100px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .problem-paragraph .word { transition: color 150ms; }
+    }
+
+    /* ─── ABOUT / WHO AM I ─── */
+    /* Scroll-driven reveal: the section pins for a while, and as you scroll
+       the figure walks from left to right across the copy. The copy is
+       clipped so it only exists to the LEFT of the figure's centre line
+       (--reveal, set by JS), so the figure reads as wiping the text in. */
+    .about {
+      /* card width: sized so the whole card (tab + 4:5 photo + caption) fits ~72% of the viewport height */
+      --photo-w: min(30vw, calc(72svh * 0.7));
+      position: relative;
+      height: 260svh; /* scroll distance the pin runs for */
+      background: transparent;
+    }
+
+    .about-pin {
+      position: sticky;
+      top: 0;
+      height: 100svh;
+      overflow: hidden;
+      padding: 0 56px;
+    }
+
+    .about-copy {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 56px;
+      width: calc((100% - 112px) * 0.36);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-top: 64px; /* clear the fixed nav */
+      clip-path: inset(0 calc(100% - var(--reveal, 0px)) 0 0);
+    }
+
+    .about-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: #A7A7A7;
+      margin-bottom: 18px;
+    }
+
+    /* only the Capabilities eyebrow (below) still fades in on view */
+    .services-section .about-eyebrow {
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 500ms var(--ease-out), transform 500ms var(--ease-out);
+    }
+
+    .about-eyebrow::before {
+      content: '';
+      display: block;
+      width: 24px;
+      height: 1px;
+      background: var(--ink);
+      flex-shrink: 0;
+    }
+
+    .services-section.is-visible .about-eyebrow {
+      opacity: 1;
+      transform: none;
+    }
+
+    .about-title {
+      font-family: var(--f-display);
+      font-size: clamp(29px, 3.4vw, 46px);
+      line-height: 1.02;
+      color: var(--ink);
+      margin-bottom: 28px;
+    }
+
+    .about-tagline {
+      display: flex;
+      flex-direction: column;
+      gap: 0 0.35em;
+      font-family: var(--f-display);
+      font-size: clamp(28px, 2.9vw, 44px);
+      font-weight: 400;
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+      margin-bottom: 28px;
+    }
+
+    .about-bio {
+      max-width: 62ch;
+      font-size: clamp(16px, 1.3vw, 20px);
+      font-weight: 400;
+      line-height: 1.65;
+      color: #CFCFCF;
+      margin-bottom: 32px;
+      text-wrap: pretty;
+    }
+
+    /* CTA button — sharp corners, Nike-style */
+    .btn-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      background: var(--c-orange);
+      color: #F9F9F9;
+      border: 1px solid var(--c-orange);
+      border-radius: 0;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      align-self: flex-start;
+      transition: background 200ms ease-out, color 200ms ease-out;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .btn-cta:hover {
+        background: transparent;
+        color: var(--c-orange);
+      }
+    }
+
+    .btn-cta:active { transform: scale(0.97); }
+    .btn-cta:focus-visible { outline: 2px solid var(--amber); outline-offset: 4px; }
+
+    .about-name {
+      position: absolute;
+      z-index: 1; /* above the copy, below the figure */
+      top: 50%;
+      right: 56px;
+      transform: translateY(-46%);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end; /* right-aligned */
+      font-family: var(--f-display);
+      font-size: clamp(52px, 10svh, 118px);
+      line-height: 0.98;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+      color: var(--ink);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    /* The figure: anchored bottom-left, moved along X by JS (--photo-x) */
+    .about-photo {
+      position: absolute;
+      left: 56px;
+      top: 50%;
+      z-index: 2;
+      width: var(--photo-w);
+      transform: translate3d(var(--photo-x, 0px), -46%, 0) rotate(-2.5deg);
+      will-change: transform;
+      pointer-events: none;
+    }
+
+    .profile-card { position: relative; padding-top: 34px; filter: drop-shadow(0 30px 50px rgb(0 0 0 / 0.55)); }
+
+    /* folder-style tab: rounded corner + curved shoulder */
+    .profile-tab {
+      position: absolute;
+      top: 1px;
+      left: 0;
+      height: 34px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 12px 0 18px;
+      background: #F9F9F9;
+      border-radius: 14px 0 0 0;
+      font-family: var(--f-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--c-orange);
+    }
+    .profile-tab::after {
+      content: '';
+      position: absolute;
+      left: calc(100% - 1px);
+      bottom: 0;
+      width: 38px;
+      height: 34px;
+      background: inherit;
+      clip-path: path('M0 0 C 18 0 20 34 38 34 L 0 34 Z');
+    }
+
+    .profile-sheet {
+      padding: 12px 12px 0;
+      background: #F9F9F9;
+      border-radius: 0 20px 20px 20px;
+    }
+
+    /* crop the full-length cut-out to head + shoulders + torso */
+    .profile-img {
+      position: relative;
+      aspect-ratio: 4 / 5;
+      overflow: hidden;
+      border-radius: 12px;
+      background: #ECEAE5; /* plain paper, a shade under the sheet */
+    }
+    .profile-img img {
+      position: absolute;
+      width: 163.5%;
+      left: -25.3%;
+      top: -7%;
+      height: auto;
+      display: block;
+    }
+
+    .profile-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 4px 14px;
+      font-family: var(--f-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #0A0A0A;
+    }
+
+    /* ─── WHAT I BRING (separate section, below Who Am I) ─── */
+    .services-section {
+      background: transparent;
+      padding: 0 56px 96px;
+    }
+
+    .services-heading {
+      font-family: var(--f-display);
+      font-size: clamp(29px, 3.4vw, 46px);
+      line-height: 1.02;
+      color: var(--ink);
+      margin-bottom: 48px;
+      opacity: 0;
+      transform: translateY(14px);
+      transition:
+        opacity   450ms var(--ease-out),
+        transform 450ms var(--ease-out);
+      transition-delay: 100ms;
+    }
+
+    .services-section.is-visible .services-heading {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* Service folders — same folder language as the project cards, small.
+       Front flap: number + title + "Click here". Hover tips the flap and a
+       sheet of paper peeks out; click (or Enter/Space) opens it: flap and
+       back drop away and the paper rises with the description. */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 40px 28px;
+      margin-bottom: 48px;
+    }
+
+    .sfolder {
+      --tab-h: 26px;
+      --sf-back: color-mix(in srgb, var(--sf-bg) 74%, #000);
+      position: relative;
+      display: block;
+      width: 100%;
+      aspect-ratio: 5 / 4.4;
+      min-height: 270px;
+      padding: 0;
+      border: 0;
+      background: none;
+      font: inherit;
+      text-align: left;
+      color: inherit;
+      cursor: pointer;
+      perspective: 1000px;
+      -webkit-tap-highlight-color: transparent;
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 460ms var(--ease-out), transform 460ms var(--ease-out);
+    }
+
+    .services-section.is-visible .sfolder { opacity: 1; transform: none; }
+    .services-section.is-visible .sfolder:nth-child(2) { transition-delay: 70ms; }
+    .services-section.is-visible .sfolder:nth-child(3) { transition-delay: 140ms; }
+    .services-section.is-visible .sfolder:nth-child(4) { transition-delay: 210ms; }
+
+    .sfolder:focus-visible { outline: 2px solid var(--amber); outline-offset: 6px; border-radius: 20px; }
+
+    .sfolder-back {
+      position: absolute;
+      inset: var(--tab-h) 0 0 0;
+      background: var(--sf-back);
+      border-radius: 0 20px 20px 20px;
+      transition: opacity 320ms var(--ease-out), transform 420ms var(--ease-out);
+    }
+
+    .sfolder-back::before { /* tab */
+      content: '';
+      position: absolute;
+      bottom: calc(100% - 1px);
+      left: 0;
+      width: 34%;
+      height: var(--tab-h);
+      background: inherit;
+      border-radius: 16px 0 0 0;
+    }
+
+    .sfolder-back::after { /* the tab's curved shoulder */
+      content: '';
+      position: absolute;
+      bottom: calc(100% - 1px);
+      left: calc(34% - 1px);
+      width: 36px;
+      height: var(--tab-h);
+      background: inherit;
+      clip-path: path('M0 0 C 17 0 19 26 36 26 L 0 26 Z');
+    }
+
+    .sfolder-paper {
+      position: absolute;
+      z-index: 1;
+      left: 7%;
+      right: 7%;
+      top: calc(var(--tab-h) + 30px);
+      bottom: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 16px 18px;
+      border-radius: 14px;
+      background: #FFFFFF;
+      color: var(--c-forest);
+      box-shadow: 0 -2px 12px oklch(0% 0 0 / 0.1);
+      transition:
+        transform 460ms var(--ease-out),
+        left 460ms var(--ease-out), right 460ms var(--ease-out),
+        top 460ms var(--ease-out), box-shadow 460ms var(--ease-out);
+    }
+
+    .sfolder-paper-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .sfolder-paper-head span:last-child {
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: color-mix(in srgb, var(--sf-bg) 28%, transparent);
+    }
+
+    .sfolder-desc {
+      font-size: 14.5px;
+      line-height: 1.6;
+      color: #333333;
+      opacity: 0;
+      transition: opacity 260ms var(--ease-out);
+    }
+
+    .sfolder-front {
+      position: absolute;
+      z-index: 2;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      top: calc(var(--tab-h) + 24px);
+      display: flex;
+      flex-direction: column;
+      padding: 20px 22px;
+      border-radius: 20px;
+      border: 1px solid color-mix(in srgb, #fff 32%, transparent);
+      background: linear-gradient(180deg,
+        color-mix(in srgb, var(--sf-bg) 70%, #fff) 0%,
+        var(--sf-bg) 55%,
+        color-mix(in srgb, var(--sf-bg) 90%, #000) 100%);
+      color: var(--sf-fg);
+      transform-origin: 50% 100%;
+      transition: transform 420ms var(--ease-out), opacity 320ms var(--ease-out);
+    }
+
+    .sfolder-num {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      opacity: 0.7;
+    }
+
+    .sfolder-title {
+      margin-top: 10px;
+      font-family: var(--f-display);
+      font-size: clamp(18px, 1.55vw, 23px);
+      line-height: 1.12;
+      letter-spacing: -0.02em;
+      text-wrap: balance;
+    }
+
+    .sfolder-cta {
+      margin-top: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      opacity: 0.85;
+    }
+
+    /* hover: flap tips forward, paper peeks */
+    @media (hover: hover) and (pointer: fine) {
+      .sfolder:not(.is-open):hover .sfolder-front { transform: rotateX(-12deg) translateY(4px); }
+      .sfolder:not(.is-open):hover .sfolder-paper { transform: translateY(-40px); }
+    }
+
+    /* open: flap and back drop away, paper rises to fill the folder */
+    .sfolder.is-open .sfolder-front { transform: translateY(40%) rotateX(-40deg); opacity: 0; pointer-events: none; }
+    .sfolder.is-open .sfolder-back  { transform: translateY(8%); opacity: 0; }
+    .sfolder.is-open .sfolder-paper {
+      left: 0; right: 0; top: 0;
+      box-shadow: 0 18px 40px oklch(0% 0 0 / 0.14);
+    }
+    .sfolder.is-open .sfolder-desc { opacity: 1; transition-delay: 180ms; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .sfolder, .sfolder-back, .sfolder-front, .sfolder-paper, .sfolder-desc { transition-duration: 1ms !important; transition-delay: 0ms !important; }
+    }
+
+    /* Tools */
+    .tools-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0;
+      border-top: 1px solid #333333;
+      padding-top: 18px;
+      opacity: 0;
+      transform: translateY(12px);
+      transition:
+        opacity   450ms var(--ease-out),
+        transform 450ms var(--ease-out);
+      transition-delay: 520ms;
+    }
+
+    .services-section.is-visible .tools-row {
+      opacity: 1;
+      transform: none;
+    }
+
+    .tool-item {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      color: #A7A7A7;
+    }
+
+    .tool-sep {
+      margin: 0 10px;
+      color: #BDBDBD;
+      font-size: 11px;
+    }
+
+    /* ─── REDUCED MOTION ─── */
+    @media (prefers-reduced-motion: reduce) {
+      .hero-tag::before { animation: none; transform: scaleX(1); }
+
+      .about-eyebrow,
+      .services-heading,
+      .sfolder,
+      .tools-row {
+        opacity: 1 !important;
+        transform: none !important;
+        clip-path: none !important;
+        transition: none !important;
+      }
+
+      /* no pin, no wipe: plain two-column layout */
+      .about { height: auto; }
+      .about-pin { position: relative; height: auto; overflow: visible; padding: 120px 56px 0; display: flex; gap: 48px; align-items: flex-end; }
+      .about-copy { position: static; width: auto; flex: 1; clip-path: none; padding: 0 0 96px; }
+      .about-photo { position: relative; left: auto; top: auto; flex-shrink: 0; transform: rotate(-2deg); align-self: center; }
+      .about-pin { position: relative; }
+    }
+
+    /* ─── WORK SECTION ─── */
+    .work-section {
+      background: transparent;
+      padding-top: 96px;
+    }
+
+    .work-header {
+      padding: 0 56px 48px;
+    }
+
+    .work-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+
+    .work-eyebrow::before {
+      content: '';
+      display: block;
+      width: 24px;
+      height: 1px;
+      background: var(--amber);
+      flex-shrink: 0;
+      transform-origin: left;
+      transform: scaleX(0);
+      transition: transform 600ms var(--ease-out);
+      transition-delay: 80ms;
+    }
+
+    .work-section.is-visible .work-eyebrow::before { transform: scaleX(1); }
+
+    .work-title {
+      font-family: var(--f-display);
+      font-size: clamp(38px, 5.44vw, 75px);
+      line-height: 1.02;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      opacity: 0;
+      transform: translateY(22px);
+      filter: blur(6px);
+      transition:
+        opacity   800ms var(--ease-out),
+        transform 800ms var(--ease-out),
+        filter    800ms var(--ease-out);
+      transition-delay: 120ms;
+    }
+
+    .work-section.is-visible .work-title {
+      opacity: 1;
+      transform: none;
+      filter: blur(0);
+    }
+
+    /* Filter bar — sticky below fixed nav */
+    .filter-bar {
+      position: sticky;
+      top: 68px;
+      z-index: 40;
+      background: rgb(10 10 10 / 0.6);
+      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(14px);
+      border-top:    1px solid var(--border-sub);
+      border-bottom: 1px solid var(--border-sub);
+      padding: 14px 56px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    .filter-bar::-webkit-scrollbar { display: none; }
+
+    .filter-pill {
+      flex-shrink: 0;
+      padding: 8px 18px;
+      border: 1px solid var(--border);
+      border-radius: 30px;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: transparent;
+      cursor: pointer;
+      transition:
+        background   200ms var(--ease-out),
+        border-color 200ms var(--ease-out),
+        color        200ms var(--ease-out),
+        transform    100ms ease-out;
+    }
+    @media (hover: hover) and (pointer: fine) {
+      .filter-pill:hover { color: var(--ink); border-color: #4A4A4A; }
+    }
+    .filter-pill:active { transform: scale(0.96); }
+    .filter-pill.active {
+      background: var(--amber);
+      border-color: var(--amber);
+      color: #0A0A0A;
+    }
+    .filter-pill:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; border-radius: 30px; }
+
+    /* Carousel */
+    .carousel-wrap { padding: 40px 0 0; }
+
+    .carousel-track {
+      display: flex;
+      align-items: flex-start;
+      gap: 22px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      padding: 8px 56px 36px;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    .carousel-track::-webkit-scrollbar { display: none; }
+
+    /* Work card */
+    .work-card {
+      flex-shrink: 0;
+      width: 316px;
+      border-radius: 4px;
+      background: var(--surface);
+      border: 1px solid var(--border-sub);
+      overflow: hidden;
+      scroll-snap-align: start;
+      cursor: pointer;
+      opacity: 0;
+      transform: translateY(20px);
+      transition:
+        opacity    400ms var(--ease-out),
+        transform  250ms var(--ease-out),
+        box-shadow 250ms var(--ease-out);
+    }
+    .work-card.in { opacity: 1; transform: translateY(0); }
+    @media (hover: hover) and (pointer: fine) {
+      .work-card:hover {
+        transform: translateY(-4px);
+        box-shadow:
+          0 12px 32px oklch(0% 0 0 / 0.48),
+          0  2px  8px oklch(0% 0 0 / 0.24);
+      }
+    }
+    .work-card:active { transform: scale(0.98) !important; }
+    .work-card:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; border-radius: 4px; }
+
+    /* Thumbnail — all cards 9:16 */
+    .card-thumb {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 9 / 16;
+      overflow: hidden;
+    }
+    .card-thumb::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent, transparent 2px,
+        oklch(0% 0 0 / 0.06) 2px, oklch(0% 0 0 / 0.06) 4px
+      );
+      pointer-events: none;
+      z-index: 1;
+    }
+    .play-ring-wrap {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 2;
+      width: 60px; height: 60px;
+    }
+    .play-ring-wrap svg {
+      width: 100%; height: 100%;
+      animation: ringPulse 2.2s ease-in-out infinite;
+    }
+    @keyframes ringPulse {
+      0%, 100% { opacity: 0.55; transform: scale(1); }
+      50%       { opacity: 1;   transform: scale(1.08); }
+    }
+    .card-badge {
+      position: absolute;
+      top: 12px; left: 12px;
+      z-index: 3;
+      padding: 4px 10px;
+      border-radius: 30px;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      line-height: 1;
+    }
+    .card-duration {
+      position: absolute;
+      bottom: 10px; right: 10px;
+      z-index: 3;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      color: #EDEDED;
+      background: oklch(0% 0 0 / 0.60);
+      padding: 3px 8px;
+      border-radius: 3px;
+    }
+
+    /* Card body */
+    .card-body { padding: 18px 20px 16px; }
+    .card-brand {
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .card-title {
+      font-family: var(--f-display);
+      font-size: 14px;
+      line-height: 1.06;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      margin-bottom: 10px;
+    }
+    .card-intro {
+      font-size: 12px;
+      line-height: 1.68;
+      color: var(--muted);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+    .card-stats {
+      display: flex;
+      align-items: stretch;
+      border-top: 1px solid var(--border-sub);
+      padding-top: 14px;
+    }
+    .w-stat {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 0 4px;
+    }
+    .w-stat + .w-stat { border-left: 1px solid var(--border-sub); }
+    .w-stat-value {
+      font-family: var(--f-display);
+      font-size: 12px;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      line-height: 1.02;
+    }
+    .w-stat-label {
+      font-size: 8.5px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    /* Empty state */
+    .work-empty {
+      display: none;
+      padding: 80px 56px;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    /* Controls */
+    .carousel-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      padding: 4px 56px 96px;
+    }
+    .arrow-btn {
+      width: 44px; height: 44px;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      background: transparent;
+      color: var(--ink);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition:
+        background   180ms var(--ease-out),
+        border-color 180ms var(--ease-out),
+        transform    100ms ease-out;
+    }
+    @media (hover: hover) and (pointer: fine) {
+      .arrow-btn:hover { background: var(--surface); border-color: #4A4A4A; }
+    }
+    .arrow-btn:active  { transform: scale(0.92); }
+    .arrow-btn:disabled { opacity: 0.22; cursor: not-allowed; pointer-events: none; }
+    .arrow-btn:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; border-radius: 50%; }
+
+    .dot-row { display: flex; align-items: center; gap: 6px; }
+    .w-dot {
+      width: 6px; height: 6px;
+      border-radius: 3px;
+      background: var(--border);
+      cursor: pointer;
+      border: none;
+      padding: 0;
+      transition:
+        width      300ms var(--ease-out),
+        background 300ms var(--ease-out);
+    }
+    .w-dot.active { width: 22px; background: var(--amber); }
+    .w-dot:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: oklch(0% 0 0 / 0.82);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 200ms var(--ease-out);
+    }
+    .modal-backdrop.open { opacity: 1; pointer-events: all; }
+    .w-modal {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      width: 100%;
+      max-width: 700px;
+      max-height: 88vh;
+      overflow-y: auto;
+      transform: scale(0.95);
+      transition: transform 220ms var(--ease-out);
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+    .modal-backdrop.open .w-modal { transform: scale(1); }
+    .modal-close {
+      position: absolute;
+      top: 14px; right: 14px;
+      z-index: 10;
+      width: 36px; height: 36px;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      background: var(--surface-2);
+      color: var(--ink);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 160ms, transform 100ms ease-out;
+    }
+    @media (hover: hover) and (pointer: fine) {
+      .modal-close:hover { background: #333333; }
+    }
+    .modal-close:active { transform: scale(0.90); }
+    .modal-close:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; border-radius: 50%; }
+
+    .modal-thumb {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #111111;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border-radius: 7px 7px 0 0;
+      overflow: hidden;
+      position: relative;
+    }
+    .modal-thumb::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg, transparent, transparent 3px,
+        oklch(0% 0 0 / 0.05) 3px, oklch(0% 0 0 / 0.05) 6px
+      );
+      pointer-events: none;
+    }
+    /* when a real video is embedded, kill the scanline overlay and let controls breathe */
+    .modal-thumb.has-video {
+      overflow: visible;
+      display: block;
+    }
+    .modal-thumb.has-video::before { display: none; }
+    /* a real cover photo also doesn't need the placeholder scanline texture */
+    .modal-thumb.has-image::before { display: none; }
+    .modal-thumb-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    /* ─── 16:9 stacked modal (default) ─── */
+    .w-modal--horiz { max-width: 700px; }
+
+    /* ─── 9:16 two-column modal ─── */
+    .w-modal--vert {
+      max-width: 900px;
+      display: flex;
+      flex-direction: row;
+      overflow: hidden;       /* body panel scrolls instead */
+      max-height: 88vh;
+    }
+    .w-modal--vert .modal-thumb {
+      flex-shrink: 0;
+      width: auto;
+      aspect-ratio: 9 / 16;
+      height: 88vh;
+      max-height: 88vh;
+      border-radius: 7px 0 0 7px;
+      overflow: hidden;
+    }
+    .w-modal--vert .modal-thumb.has-video {
+      overflow: hidden;       /* keep video inside the box */
+      display: flex;
+    }
+    .w-modal--vert .modal-body {
+      flex: 1;
+      overflow-y: auto;
+      min-width: 240px;
+      max-height: 88vh;
+    }
+    .modal-thumb-icon {
+      width: 52px; height: 52px;
+      border: 1.5px solid rgb(249 249 249 / 0.25);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+    }
+    .modal-thumb-label {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #4A4A4A;
+      position: relative;
+      z-index: 1;
+    }
+    .modal-body { padding: 24px 28px 28px; }
+    .modal-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .modal-brand {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.20em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .modal-cat-badge {
+      padding: 3px 9px;
+      border-radius: 30px;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+    }
+    .modal-title {
+      font-family: var(--f-display);
+      font-size: 26px;
+      line-height: 1.02;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      margin-bottom: 14px;
+    }
+    .modal-intro {
+      font-size: 15px;
+      font-weight: 400;
+      line-height: 1.78;
+      color: #B5B5B5;
+      margin-bottom: 24px;
+    }
+    .modal-stats {
+      display: flex;
+      border-top: 1px solid var(--border-sub);
+      padding-top: 20px;
+    }
+    .modal-stat {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      padding: 0 8px;
+    }
+    .modal-stat + .modal-stat { border-left: 1px solid var(--border-sub); }
+    .modal-stat-value {
+      font-family: var(--f-display);
+      font-size: 19px;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      line-height: 1.02;
+    }
+    .modal-stat-label {
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-align: center;
+    }
+    .modal-yt-btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 12px 24px;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      color: var(--ink);
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 0;
+      text-decoration: none;
+      transition: background 200ms ease, color 200ms ease;
+    }
+    @media (hover: hover) and (pointer: fine) {
+      .modal-yt-btn:hover {
+        background: var(--ink);
+        color: var(--bg);
+      }
+    }
+    .modal-yt-btn:active { transform: scale(0.97); }
+
+    /* ─── TABLET: 769px – 1024px ─── */
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .nav {
+        padding: 24px 40px;
+      }
+
+      .nav.is-solid {
+        padding: 16px 40px;
+      }
+
+      .nav-link {
+        font-size: 13px;
+      }
+
+      .about-pin   { padding: 0 40px; }
+      .about-copy  { left: 40px; width: calc((100% - 80px) * 0.38); }
+      .about-photo { left: 40px; }
+      .about-name  { right: 40px; }
+
+      .services-section {
+        padding: 0 40px 72px;
+      }
+
+      .services-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+      .work-header    { padding: 0 40px 40px; }
+      .filter-bar     { padding: 13px 40px; top: 58px; }
+      .carousel-track { padding: 8px 40px 28px; }
+      .carousel-controls { padding: 4px 40px 72px; }
+      .work-empty     { padding: 60px 40px; }
+    }
+
+    /* ─── MOBILE: ≤768px ─── */
+    @media (max-width: 768px) {
+      /* NAV */
+      .nav {
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        padding: 20px 20px;
+      }
+
+      .nav.is-solid {
+        padding: 14px 20px;
+      }
+
+      .nav-links {
+        gap: 14px 18px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .nav-link {
+        font-size: 11px;
+        white-space: nowrap;
+      }
+
+      /* HERO */
+      .hero-content {
+        padding: 0 24px 52px;
+      }
+
+      .hero-headline-wrap {
+        padding-top: 16vh;
+      }
+
+      .hero-headline {
+        white-space: normal;
+        text-wrap: balance; /* too narrow for one line: split evenly instead */
+        font-size: clamp(30px, 9vw, 44px);
+      }
+
+      .hero-subheadline {
+        font-size: 13px;
+      }
+
+      .scroll-hint {
+        right: 20px;
+        bottom: 32px;
+      }
+
+      /* ABOUT / WHO AM I */
+      /* too narrow for figure + copy side by side: no pin, simple stack */
+      .about { height: auto; }
+      .about-pin {
+        position: relative;
+        height: auto;
+        overflow: visible;
+        padding: 56px 24px 0;
+      }
+      .about-copy {
+        position: relative;
+        z-index: 2;
+        left: auto;
+        width: auto;
+        padding: 0 0 32px;
+        clip-path: none;
+      }
+      .about-tagline { flex-direction: column; font-size: 34px; margin-bottom: 24px; }
+      .about-bio { font-size: 16px; }
+      .about-photo {
+        position: relative;
+        left: auto;
+        top: auto;
+        width: min(82vw, 340px);
+        margin: 8px auto 40px;
+        transform: rotate(-2deg);
+      }
+      /* phone: the card would hide the name, so it sits above the card instead */
+      .about-name {
+        position: relative;
+        top: auto;
+        right: auto;
+        transform: none;
+        align-items: flex-start;
+        margin: 8px 0 20px;
+        font-size: min(20vw, 84px);
+      }
+
+      /* CTA full-width */
+      .btn-cta {
+        width: 100%;
+        align-self: stretch;
+        justify-content: center;
+      }
+
+      /* WHAT I BRING */
+      .services-section {
+        padding: 0 24px 56px;
+      }
+
+      /* Service folders: single column */
+      .services-grid {
+        grid-template-columns: 1fr;
+        gap: 28px;
+      }
+      .sfolder { aspect-ratio: auto; min-height: 250px; }
+
+      /* Tools */
+      .tools-row {
+        gap: 8px;
+      }
+
+      .tool-sep {
+        margin: 0 2px;
+      }
+
+      .work-section   { padding-top: 64px; }
+      .work-header    { padding: 0 24px 32px; }
+      .filter-bar     { padding: 12px 24px; top: 88px; }
+      .carousel-track { padding: 8px 24px 28px; gap: 16px; }
+      .work-card      { width: calc(100vw - 88px); }
+      .carousel-controls { padding: 4px 24px 64px; }
+      .work-empty     { padding: 60px 24px; }
+      .w-modal        { max-width: 100%; }
+      .modal-body     { padding: 20px 20px 24px; }
+      .modal-title    { font-size: 30px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .work-title,
+      .work-eyebrow::before { transition: none; opacity: 1; transform: none; filter: none; }
+      .play-ring-wrap svg   { animation: none; }
+      .work-card            { transition: opacity 200ms; }
+    }
+
+    /* ─── COPYWRITING SECTION ─── */
+    .copy-section {
+      background: transparent;
+      padding: 96px 56px 120px;
+    }
+
+    .copy-header { max-width: 720px; margin-bottom: 56px; }
+
+    .copy-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+
+    .copy-eyebrow::before {
+      content: '';
+      display: block;
+      width: 24px;
+      height: 1px;
+      background: var(--amber);
+      flex-shrink: 0;
+      transform-origin: left;
+      transform: scaleX(0);
+      transition: transform 600ms var(--ease-out);
+      transition-delay: 80ms;
+    }
+
+    .copy-section.is-visible .copy-eyebrow::before { transform: scaleX(1); }
+
+    .copy-title {
+      font-family: var(--f-display);
+      font-size: clamp(33px, 4.08vw, 57px);
+      line-height: 1.02;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      margin-bottom: 20px;
+      opacity: 0;
+      transform: translateY(22px);
+      filter: blur(6px);
+      transition:
+        opacity   800ms var(--ease-out),
+        transform 800ms var(--ease-out),
+        filter    800ms var(--ease-out);
+      transition-delay: 120ms;
+    }
+
+    .copy-section.is-visible .copy-title {
+      opacity: 1;
+      transform: none;
+      filter: blur(0);
+    }
+
+    .copy-bio {
+      max-width: 620px;
+      opacity: 0;
+      transform: translateY(16px);
+      transition:
+        opacity   600ms var(--ease-out),
+        transform 600ms var(--ease-out);
+      transition-delay: 220ms;
+    }
+
+    .copy-section.is-visible .copy-bio {
+      opacity: 1;
+      transform: none;
+    }
+
+    .copy-bio p {
+      font-size: 15px;
+      line-height: 1.75;
+      color: var(--muted);
+      font-weight: 300;
+      margin-bottom: 16px;
+    }
+
+    .copy-bio p:last-child { margin-bottom: 0; }
+    .copy-bio strong { color: var(--ink); font-weight: 600; }
+    .copy-bio u { text-decoration-color: var(--amber); text-underline-offset: 3px; }
+
+
+    /* Shared modal case-content (also used in copy-modal) */
+    .case-block-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #BDBDBD;
+      margin-bottom: 14px;
+    }
+
+    .case-block p {
+      font-size: 14px;
+      line-height: 1.75;
+      color: #A7A7A7;
+      font-weight: 300;
+    }
+
+    .case-block ol,
+    .case-block ul {
+      margin: 0;
+      padding-left: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .case-block li {
+      font-size: 13.5px;
+      line-height: 1.7;
+      color: #A7A7A7;
+      font-weight: 300;
+    }
+
+    .case-block li strong { color: var(--ink); font-weight: 500; }
+
+    .quiz-flow { display: flex; flex-direction: column; margin-top: 24px; }
+
+    .quiz-step { padding: 22px 0; border-top: 1px solid var(--border-sub); }
+    .quiz-step:first-child { border-top: none; padding-top: 0; }
+
+    .quiz-q-num {
+      font-family: var(--f-display);
+      font-size: 9px;
+      letter-spacing: -0.02em;
+      color: var(--amber);
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .quiz-q-text {
+      font-size: 16px;
+      color: var(--ink);
+      font-weight: 400;
+      margin-bottom: 14px;
+    }
+
+    .quiz-options { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .quiz-opt {
+      font-size: 12.5px;
+      color: #B5B5B5;
+      background: var(--surface-2);
+      border: 1px solid var(--border-sub);
+      padding: 8px 14px;
+      border-radius: 30px;
+    }
+
+    /* ── Modal ad block (TOF ad sample) ── */
+    .ad-block {
+      background: var(--surface-2);
+      border: 1px solid var(--border-sub);
+      border-radius: 6px;
+      padding: 20px 22px;
+      margin-bottom: 8px;
+    }
+
+    .ad-label {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .ad-hook {
+      font-size: 15px;
+      color: var(--ink);
+      font-weight: 500;
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+
+    .ad-primary {
+      font-size: 13px;
+      line-height: 1.75;
+      color: #A7A7A7;
+      font-weight: 300;
+      margin-bottom: 16px;
+    }
+
+    .ad-cta {
+      display: inline-block;
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--amber);
+      border: 1px solid rgb(232 80 2 / 0.35);
+      padding: 7px 16px;
+      border-radius: 30px;
+    }
+
+    /* ── Interstitial card (inside quiz flow) ── */
+    .interstitial-card {
+      margin: 24px 0;
+      padding: 18px 20px;
+      background: var(--surface-2);
+      border-left: 2px solid var(--amber);
+      border-radius: 0 4px 4px 0;
+    }
+
+    .interstitial-label {
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .interstitial-headline {
+      font-size: 15px;
+      color: var(--ink);
+      font-weight: 500;
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+
+    .interstitial-quote {
+      font-size: 13px;
+      color: #A7A7A7;
+      font-style: italic;
+      line-height: 1.6;
+      margin-bottom: 6px;
+    }
+
+    .interstitial-quote:last-child { margin-bottom: 0; }
+    .interstitial-quote span { font-style: normal; color: var(--muted); }
+
+    /* ── Result reveal (end of quiz) ── */
+    .reveal-block {
+      margin-top: 8px;
+      padding-top: 28px;
+      border-top: 1px solid var(--border-sub);
+    }
+
+    .reveal-checklist {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .reveal-check { font-size: 13px; color: #B5B5B5; display: flex; align-items: center; gap: 8px; }
+    .reveal-check::before { content: '✓'; color: #D9C3AB; font-weight: 700; }
+
+    .reveal-lead {
+      font-size: 15px;
+      color: var(--ink);
+      font-weight: 500;
+      margin-bottom: 18px;
+      line-height: 1.5;
+    }
+
+    .reveal-note {
+      font-size: 13.5px;
+      color: #A7A7A7;
+      font-weight: 300;
+      margin-bottom: 14px;
+      line-height: 1.7;
+    }
+
+    .reveal-steps {
+      margin: 0 0 14px;
+      padding-left: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .reveal-steps li { font-size: 13.5px; color: #A7A7A7; line-height: 1.7; font-weight: 300; }
+
+    .reveal-cta {
+      display: inline-block;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: #0A0A0A;
+      background: var(--amber);
+      padding: 10px 20px;
+      border-radius: 30px;
+      margin-top: 4px;
+    }
+
+    /* ── Advertorial rendering ── */
+    .advertorial-title {
+      font-family: var(--f-display);
+      font-size: 19px;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      line-height: 1.15;
+      margin-bottom: 8px;
+    }
+
+    .advertorial-byline {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 22px;
+    }
+
+    .advertorial-body p {
+      font-size: 14px;
+      line-height: 1.8;
+      color: #ADADAD;
+      font-weight: 300;
+      margin-bottom: 16px;
+    }
+
+    .advertorial-cta {
+      display: inline-block;
+      margin: 2px 0 18px;
+      padding: 8px 16px;
+      border: 1px solid rgb(232 80 2 / 0.4);
+      border-radius: 30px;
+      color: var(--amber);
+      font-size: 12.5px;
+      font-weight: 500;
+    }
+
+    /* ── Copy case modal ── */
+    .copy-modal { max-width: 760px; }
+    .copy-modal-body { padding: 32px 40px 44px; }
+
+    @media (max-width: 768px) {
+      .copy-section    { padding: 64px 24px 80px; }
+      .copy-modal-body { padding: 24px 22px 32px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .copy-eyebrow::before,
+      .copy-title,
+      .copy-bio {
+        transition: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+        filter: none !important;
+      }
+    }
+
+    /* ─── PROJECTS & CAMPAIGNS: stacked folders ─── */
+    /* Every project is a physical folder: a darker back panel with a curved
+       tab, a sheet of paper inside, and a gradient front flap holding the
+       content. All folders stick at the same `top`, so each next one slides
+       up and covers the last; tabs step right per folder so earlier tabs
+       stay visible behind. Hover tips the flap forward and the paper peeks. */
+    .folder-stack {
+      --folder-top: 104px;
+      --tab-h: 56px;
+      --front-gap: 34px;   /* how far the flap sits below the back panel's top */
+      --tab-step: clamp(110px, 15vw, 200px);
+      position: relative;
+      z-index: 3;
+      isolation: isolate;
+      background: transparent;
+      padding: 0 56px 140px;
+    }
+
+    .folder {
+      --folder-back: color-mix(in srgb, var(--folder-bg) 74%, #000);
+      position: sticky;
+      top: var(--folder-top);
+      max-width: 1180px;
+      margin: 0 auto;
+      /* padding, not a margin on the flap: a child margin would collapse through */
+      padding-top: calc(var(--tab-h) + var(--front-gap));
+      perspective: 1800px;
+      cursor: pointer;
+      /* drop-shadow (not box-shadow) so the shadow follows the tab shape */
+      filter: drop-shadow(0 -10px 28px oklch(0% 0 0 / 0.45));
+    }
+
+    .folder-back {
+      position: absolute;
+      top: var(--tab-h);
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--folder-back);
+      border-radius: 24px;
+    }
+
+    .folder:first-child .folder-back { border-top-left-radius: 0; }
+
+    /* tab: rounded top-left, S-curve shoulder on the right (the ::after) */
+    .folder-tab {
+      position: absolute;
+      bottom: 100%;
+      left: calc(var(--i) * var(--tab-step));
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      height: var(--tab-h);
+      padding: 0 16px 0 28px;
+      margin-bottom: -1px; /* hide the hairline seam between tab and body */
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      color: var(--folder-fg);
+      background: var(--folder-back);
+      border-radius: 18px 0 0 0;
+    }
+
+    .folder-tab::after {
+      content: '';
+      position: absolute;
+      left: calc(100% - 1px);
+      bottom: 0;
+      width: 56px;
+      height: 100%;
+      background: inherit;
+      clip-path: path('M0 0 C 26 0 30 56 56 56 L 0 56 Z');
+    }
+
+    .folder-paper {
+      position: absolute;
+      z-index: 1;
+      left: 4%;
+      right: 4%;
+      top: calc(var(--tab-h) + var(--front-gap) + 10px);
+      height: 150px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 22px;
+      border-radius: 14px;
+      background: #FFFFFF;
+      color: var(--c-forest);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      box-shadow: 0 -4px 16px oklch(0% 0 0 / 0.12);
+      transition: transform 420ms var(--ease-out);
+    }
+
+    .folder-paper-tag {
+      padding: 3px 9px;
+      border-radius: 6px;
+      background: color-mix(in srgb, var(--folder-bg) 22%, transparent);
+      color: var(--c-forest);
+      letter-spacing: 0.06em;
+    }
+
+    .folder-card {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: 1fr 1.1fr;
+      gap: 48px;
+      height: calc(100svh - var(--folder-top) - var(--tab-h) - var(--front-gap) - 24px);
+      max-height: 660px;
+      padding: 48px 56px;
+      /* lighter at the top edge, full colour at the bottom, like a real flap */
+      background: linear-gradient(180deg,
+        color-mix(in srgb, var(--folder-bg) 72%, #fff) 0%,
+        var(--folder-bg) 45%,
+        color-mix(in srgb, var(--folder-bg) 90%, #000) 100%);
+      border: 1px solid color-mix(in srgb, #fff 30%, transparent);
+      border-radius: 24px;
+      color: var(--folder-fg);
+      overflow: hidden;
+      transform-origin: 50% 100%;
+      transition: transform 420ms var(--ease-out);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .folder:hover .folder-card  { transform: rotateX(-7deg) translateY(4px); }
+      .folder:hover .folder-paper { transform: translateY(-58px); }
+    }
+
+    .folder-info {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 0;
+    }
+
+    .folder-num {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: color-mix(in srgb, var(--folder-fg) 55%, transparent);
+      margin-bottom: 16px;
+    }
+
+    .folder-title {
+      font-family: var(--f-display);
+      font-size: clamp(24px, 2.86vw, 44px);
+      line-height: 1.02;
+      letter-spacing: -0.02em;
+      margin-bottom: 14px;
+      text-wrap: balance;
+    }
+
+    .folder-role {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: color-mix(in srgb, var(--folder-fg) 65%, transparent);
+      margin-bottom: 20px;
+    }
+
+    .folder-desc {
+      font-size: clamp(14px, 1.2vw, 16px);
+      line-height: 1.65;
+      color: color-mix(in srgb, var(--folder-fg) 82%, transparent);
+      margin-bottom: 22px;
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .folder-skills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 28px;
+    }
+
+    .folder-skills .skill-chip {
+      background: color-mix(in srgb, var(--folder-fg) 10%, transparent);
+      border-color: color-mix(in srgb, var(--folder-fg) 18%, transparent);
+      color: color-mix(in srgb, var(--folder-fg) 90%, transparent);
+    }
+
+    .folder-view-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      align-self: flex-start;
+      padding: 13px 24px;
+      border-radius: 30px;
+      background: var(--folder-fg);
+      color: var(--folder-bg);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      transition: transform 150ms ease-out;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .folder-view-btn:hover { transform: translateY(-2px); }
+    }
+
+    .folder-image {
+      min-height: 0;
+      border-radius: 12px;
+      overflow: hidden;
+      background: color-mix(in srgb, var(--folder-fg) 10%, transparent);
+      outline: 1px solid color-mix(in srgb, var(--folder-fg) 10%, transparent);
+      outline-offset: -1px;
+    }
+
+    .folder-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    @media (max-width: 900px) {
+      .folder-stack {
+        --folder-top: 96px; /* clears the two-row mobile nav */
+        --tab-h: 44px;
+        --front-gap: 18px;
+        --tab-step: 92px;
+        padding: 0 16px 96px;
+      }
+      .folder-tab { font-size: 10px; letter-spacing: 0.16em; padding: 0 8px 0 18px; border-radius: 14px 0 0 0; }
+      .folder-tab::after { width: 40px; clip-path: path('M0 0 C 18 0 22 44 40 44 L 0 44 Z'); }
+      .folder-paper { display: none; }
+      .folder-back { border-radius: 16px; }
+      .folder-tab-word { display: none; } /* "✦ 01" keeps every stacked tab fully readable */
+      .folder-card {
+        grid-template-columns: 1fr;
+        grid-template-rows: minmax(0, 1fr) auto;
+        gap: 20px;
+        padding: 20px;
+        border-radius: 16px;
+        max-height: none;
+      }
+      .folder-image { order: -1; }
+      .folder-info { justify-content: flex-start; }
+      .folder-num { display: none; }
+      .folder-title { font-size: 34px; margin-bottom: 8px; }
+      .folder-role { margin-bottom: 12px; }
+      .folder-desc { -webkit-line-clamp: 3; margin-bottom: 18px; }
+      .folder-skills { display: none; }
+    }
+
+    /* short screens and reduced motion: plain list of folders, no pinning */
+    @media (max-height: 560px), (prefers-reduced-motion: reduce) {
+      .folder { position: relative; top: auto; }
+      .folder + .folder { margin-top: 40px; }
+      .folder-card { height: auto; max-height: none; }
+      .folder-image { aspect-ratio: 16 / 10; }
+    }
+
+    .skill-chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 24px;
+    }
+
+    .skill-chip {
+      font-size: 10.5px;
+      font-weight: 500;
+      color: #B5B5B5;
+      background: var(--surface-2);
+      border: 1px solid var(--border-sub);
+      padding: 5px 11px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    /* ── Project modal: full-screen takeover instead of a centered card ── */
+    #projectModalBackdrop { padding: 0; }
+
+    .project-modal {
+      width: 100%;
+      height: 100%;
+      max-width: 100%;
+      max-height: 100%;
+      border-radius: 0;
+      border: none;
+    }
+
+    /* the cover photo stays full-bleed; only the header TEXT (role/title/
+       description/chips) is kept to a readable width — the tab columns
+       below get the full screen width instead of being squeezed into that
+       same narrow measure, which was forcing them into a tall, cramped
+       single-file scroll instead of using the open space on both sides */
+    .project-modal .copy-modal-body {
+      max-width: 100%;
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    .project-modal .modal-meta,
+    .project-modal .modal-title,
+    .project-modal .modal-intro,
+    .project-modal .skill-chip-row {
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+      padding-left: 40px;
+      padding-right: 40px;
+    }
+
+    .project-modal .project-tab-columns {
+      max-width: 1600px;
+      margin-left: auto;
+      margin-right: auto;
+      padding-left: 40px;
+      padding-right: 40px;
+    }
+
+    /* cover sits in the same column as the header text instead of full-bleed,
+       so the case study starts on screen rather than a screen below the fold */
+    .project-modal .modal-thumb {
+      width: min(820px, calc(100% - 80px));
+      margin: 72px auto 0;
+      border-radius: 12px;
+      aspect-ratio: auto; /* covers aren't all 16:9: show each one uncropped */
+    }
+    .project-modal .modal-thumb-img { height: auto; }
+
+    @media (max-width: 768px) {
+      .project-modal .modal-thumb { width: calc(100% - 44px); margin-top: 64px; }
+    }
+
+    @media (max-width: 768px) {
+      .project-modal .modal-meta,
+      .project-modal .modal-title,
+      .project-modal .modal-intro,
+      .project-modal .skill-chip-row,
+      .project-modal .project-tab-columns {
+        padding-left: 22px;
+        padding-right: 22px;
+      }
+    }
+
+    .project-modal .skill-chip-row { margin-top: 18px; margin-bottom: 0; }
+    .project-modal .modal-intro { color: rgb(249 249 249 / 0.92); font-size: 16px; }
+
+    /* All tabs render side by side as independently-scrolling, differently
+       tinted columns instead of one panel you switch between — nothing is
+       ever hidden behind a click, and each column scrolls on its own so a
+       long tab doesn't trap the rest of the modal. */
+    .project-tab-columns {
+      display: flex;
+      align-items: stretch;
+      gap: 14px;
+      margin-top: 28px;
+    }
+
+    .project-tab-col {
+      flex: 1 1 0;
+      min-width: 0;
+      border-radius: 14px;
+      padding: 22px 20px 26px;
+      max-height: 56vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      box-shadow: 0 12px 28px oklch(0% 0 0 / 0.22);
+    }
+
+    .project-tab-col:nth-child(1) { background: #1C1C1C; }
+    .project-tab-col:nth-child(2) { background: #2A0704; }
+    .project-tab-col:nth-child(3) { background: #242424; }
+
+    .project-tab-col-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgb(249 249 249 / 0.62);
+      margin-bottom: 16px;
+    }
+
+    .project-tab-next {
+      display: none;
+    }
+
+    /* ── Readability inside the tinted columns: white text, larger size,
+       one consistent body style for every tab (lists, paragraphs, notes) ── */
+    .project-tab-col {
+      --col-text: #F9F9F9;
+      padding: 28px 28px 32px;
+      max-height: 72vh;
+      scrollbar-width: thin;
+      scrollbar-color: oklch(100% 0 0 / 0.25) transparent;
+    }
+
+    .project-tab-col .case-block-title,
+    .project-tab-col .workflow-group-heading {
+      color: var(--col-text);
+    }
+
+    .project-tab-col .case-block p,
+    .project-tab-col .case-block li,
+    .project-tab-col .workflow-group li,
+    .project-tab-col .workflow-group p,
+    .project-tab-col .reflection-col li,
+    .project-tab-col > p:not(.project-tab-col-label):not(.project-placeholder) {
+      font-size: 15.5px;
+      line-height: 1.7;
+      font-weight: 400;
+      color: var(--col-text);
+    }
+
+    .project-tab-col .case-block ol,
+    .project-tab-col .case-block ul,
+    .project-tab-col .reflection-col ul { gap: 14px; padding-left: 20px; }
+
+    .project-tab-col li::marker { color: oklch(100% 0 0 / 0.5); }
+
+    .project-tab-col .workflow-quote-vi { color: var(--col-text); font-size: 15.5px; }
+    .project-tab-col .workflow-quote-en { color: rgb(249 249 249 / 0.75); font-size: 14px; }
+
+    .project-tab-col .modal-stats { border-top-color: oklch(100% 0 0 / 0.14); }
+    .project-tab-col .modal-stat + .modal-stat { border-left-color: oklch(100% 0 0 / 0.14); }
+    .project-tab-col .modal-stat-value { font-size: 34px; color: var(--col-text); }
+    .project-tab-col .modal-stat-label { font-size: 10px; color: rgb(249 249 249 / 0.7); }
+
+    /* a column is only ~1/3 of the screen: two reflection sub-columns inside
+       it were ~25 characters wide. Stack them instead. */
+    .project-tab-col .reflection-grid { grid-template-columns: 1fr; gap: 32px; }
+
+
+    .project-placeholder {
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .reflection-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+    }
+
+    .reflection-col ul {
+      margin: 0;
+      padding-left: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .reflection-col li {
+      font-size: 13.5px;
+      line-height: 1.7;
+      color: #A7A7A7;
+      font-weight: 300;
+    }
+
+    .reflection-worked .case-block-title { color: #D9C3AB; }
+    .reflection-improve .case-block-title { color: var(--amber); }
+
+    /* ── Workflow: grouped sub-sections + key-message quote ── */
+    .workflow-group { margin-bottom: 24px; }
+    .workflow-group:last-child { margin-bottom: 0; }
+
+    .workflow-group-heading {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+
+    .workflow-group ul {
+      margin: 0;
+      padding-left: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .workflow-group li,
+    .workflow-group p {
+      font-size: 13.5px;
+      line-height: 1.7;
+      color: #A7A7A7;
+      font-weight: 300;
+    }
+
+    .workflow-group p { margin: 0; }
+    .workflow-group em { color: var(--ink); font-style: italic; font-weight: 400; }
+
+    .workflow-quote {
+      margin: 4px 0 26px;
+      padding: 16px 20px;
+      background: var(--surface-2);
+      border-left: 2px solid var(--amber);
+      border-radius: 0 4px 4px 0;
+    }
+
+    .workflow-quote-vi {
+      font-size: 14px;
+      font-style: italic;
+      color: var(--ink);
+      line-height: 1.6;
+      margin-bottom: 6px;
+    }
+
+    .workflow-quote-en {
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+      .reflection-grid { grid-template-columns: 1fr; gap: 20px; }
+
+      /* stack the tinted boxes instead of side by side, and surface a
+         "next tab" jump button since one long scroll through all three
+         would otherwise bury the later tabs */
+      .project-tab-columns {
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 24px;
+      }
+      .project-tab-col {
+        max-height: none;
+        overflow: visible;
+      }
+      .project-tab-next {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        width: 100%;
+        padding: 12px;
+        margin-top: 16px;
+        background: oklch(100% 0 0 / 0.08);
+        border: none;
+        border-radius: 30px;
+        color: var(--ink);
+        font-size: 10.5px;
+        font-weight: 600;
+        letter-spacing: 0.10em;
+        text-transform: uppercase;
+        cursor: pointer;
+      }
+      .project-tab-col:last-child .project-tab-next { display: none; }
+    }
+
+    /* ─── CONTACT SECTION ─── */
+    .contact-section {
+      display: grid;
+      grid-template-columns: 40% 60%;
+      height: 75vh;
+      overflow: hidden;
+      position: relative;
+      background: url('assets/images/IMG_7133.JPG') center center / cover no-repeat;
+    }
+    .contact-section::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: linear-gradient(to right, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.65) 50%, rgba(0,0,0,0.82) 100%);
+      z-index: 1;
+    }
+
+    /* Left column */
+    .ct-left {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 60px 48px 60px 56px;
+      opacity: 0;
+      transform: translateX(-24px);
+      transition: opacity 500ms var(--ease-out), transform 500ms var(--ease-out);
+      position: relative;
+      z-index: 2;
+    }
+    .contact-section.is-visible .ct-left {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .ct-name {
+      font-family: var(--f-display);
+      font-size: clamp(49px, 5.44vw, 76px);
+      line-height: 1.02;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+    .ct-role {
+      font-size: 14px;
+      font-weight: 300;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--c-cream);
+      opacity: 0.6;
+    }
+
+    .ct-right {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 60px 72px 60px 30vw;
+      opacity: 0;
+      transform: translateX(24px);
+      transition: opacity 500ms var(--ease-out) 100ms, transform 500ms var(--ease-out) 100ms;
+      position: relative;
+      z-index: 2;
+    }
+    .contact-section.is-visible .ct-right {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .ct-right-inner {
+      max-width: 420px;
+    }
+
+    .ct-heading {
+      font-family: var(--f-display);
+      font-size: clamp(24px, 2.72vw, 38px);
+      line-height: 1.02;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      max-width: 420px;
+      margin-bottom: 24px;
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 400ms var(--ease-out) 150ms, transform 400ms var(--ease-out) 150ms;
+    }
+    .contact-section.is-visible .ct-heading {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .ct-email-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--c-cream);
+      cursor: pointer;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.3);
+      font-family: var(--f-body);
+      align-self: flex-start;
+      transition: background 180ms ease, box-shadow 180ms ease,
+                  opacity 300ms var(--ease-out) 300ms;
+      opacity: 0;
+    }
+    .contact-section.is-visible .ct-email-pill { opacity: 1; }
+    @media (hover: hover) and (pointer: fine) {
+      .ct-email-pill:hover {
+        background: rgba(0,0,0,0.65);
+        box-shadow: 0 6px 18px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.35);
+      }
+    }
+    .ct-email-pill:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; border-radius: 6px; }
+
+    .ct-copy-icon {
+      flex-shrink: 0;
+      width: 24px; height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.7);
+      transition: color 180ms ease;
+    }
+    .ct-email-pill.copied .ct-copy-icon { color: #D9C3AB; }
+
+    .ct-buttons-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .ct-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .ct-tag {
+      display: inline-block;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      color: var(--c-cream);
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.3);
+      border: none;
+      border-radius: 6px;
+      text-decoration: none;
+      opacity: 0;
+      transition: background 180ms ease, box-shadow 180ms ease;
+    }
+    .contact-section.is-visible .ct-tags .ct-tag:nth-child(1) {
+      opacity: 1;
+      transition: opacity 280ms var(--ease-out) 400ms,
+                  background 180ms ease, box-shadow 180ms ease;
+    }
+    .contact-section.is-visible .ct-tags .ct-tag:nth-child(2) {
+      opacity: 1;
+      transition: opacity 280ms var(--ease-out) 460ms,
+                  background 180ms ease, box-shadow 180ms ease;
+    }
+    .contact-section.is-visible .ct-tags .ct-tag:nth-child(3) {
+      opacity: 1;
+      transition: opacity 280ms var(--ease-out) 520ms,
+                  background 180ms ease, box-shadow 180ms ease;
+    }
+    @media (hover: hover) and (pointer: fine) {
+      a.ct-tag:hover {
+        background: rgba(0,0,0,0.65);
+        box-shadow: 0 6px 18px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.35);
+      }
+    }
+    a.ct-tag:active { transform: scale(0.97); }
+    a.ct-tag:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; border-radius: 6px; }
+
+    /* Responsive overrides */
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .contact-section { grid-template-columns: 35% 65%; }
+      .ct-left  { padding: 60px 32px 60px 40px; }
+      .ct-right { padding: 60px 40px 60px 40px; }
+    }
+    @media (max-width: 768px) {
+      .contact-section {
+        grid-template-columns: 1fr;
+        min-height: unset;
+      }
+      .ct-left  {
+        padding: 60px 24px 24px;
+        opacity: 1; transform: none;
+        transition: none;
+      }
+      .ct-right {
+        padding: 32px 24px 64px;
+        opacity: 1; transform: none;
+        transition: none;
+        justify-content: flex-start;
+      }
+      .ct-heading { opacity: 1; transform: none; font-size: clamp(32px, 9vw, 48px); margin-bottom: 20px; }
+      .ct-email-pill { opacity: 1; align-self: stretch; justify-content: space-between; font-size: 13px; }
+      .ct-tags { flex-direction: column; }
+      .ct-tag, a.ct-tag { width: 100%; text-align: center; opacity: 1; }
+    }
+
+    /* ─── MONO LABELS (Space Mono) ─── */
+    .about-eyebrow, .copy-eyebrow, .work-eyebrow, .hero-sub-word, .scroll-label,
+    .folder-tab, .folder-num, .folder-paper, .sfolder-num, .sfolder-cta,
+    .sfolder-paper-head, .filter-pill, .project-tab-col-label, .modal-stat-label {
+      font-family: var(--f-mono);
+    }
+
+    /* ─── TYPOGRAPHY FX ───────────────────────────────────────────────
+       Design-tool motifs on headings: a selection box with handles, a
+       drag-and-drop into place (with cursor), a highlight block sweeping
+       behind a word, a dashed marquee, and a pen-tool bezier curve with
+       anchors + handles. Nothing is visible until the heading itself
+       enters: words rise in one by one, and each effect starts only once
+       its own word has landed (--od is set per effect by JS). Every move
+       runs on a cubic-bezier curve. */
+    .tfx {
+      --tfx-line: var(--ink);           /* box / handle stroke */
+      --tfx-paper: #0A0A0A;             /* handle fill */
+      --tfx-hl: var(--c-orange);        /* highlight block */
+      --tfx-hl-fg: var(--c-cream);      /* text on the block */
+    }
+    .tfx--light {
+      --tfx-line: #0A0A0A;
+      --tfx-paper: #F9F9F9;
+      --tfx-hl: #0A0A0A;
+      --tfx-hl-fg: #F9F9F9;
+    }
+
+    .tfx-word {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(0.42em);
+      clip-path: inset(-0.2em -0.2em 100% -0.2em);
+      transition:
+        opacity   500ms var(--ease-out),
+        transform 700ms cubic-bezier(0.22, 1, 0.36, 1),
+        clip-path 700ms cubic-bezier(0.22, 1, 0.36, 1);
+      transition-delay: calc(var(--wi, 0) * 70ms);
+    }
+    .tfx.tfx-on .tfx-word { opacity: 1; transform: none; clip-path: inset(-0.2em -0.2em -0.3em -0.2em); }
+
+    .tfx-sel, .tfx-hl, .tfx-dash, .tfx-bez { position: relative; display: inline-block; }
+    /* room under a heading for the pen curve so it never sits on the copy below */
+    .tfx:has(.tfx-bez) { padding-bottom: 0.5em; }
+
+    /* selection box + 8 handles */
+    .tfx-box {
+      position: absolute;
+      inset: -0.06em -0.16em -0.02em;
+      border: 1.5px solid var(--tfx-line);
+      pointer-events: none;
+      clip-path: inset(0 100% 100% 0);
+      transition: clip-path 560ms var(--ease-draw) var(--od, 0ms);
+    }
+    .tfx-on .tfx-box { clip-path: inset(-12px); }
+    .tfx-box i {
+      position: absolute;
+      width: 9px;
+      height: 9px;
+      background: var(--tfx-paper);
+      border: 1.5px solid var(--tfx-line);
+      transform: translate(-50%, -50%) scale(0);
+      transition: transform 380ms var(--ease-pop);
+      transition-delay: calc(var(--od, 0ms) + 380ms + var(--hi) * 45ms);
+    }
+    .tfx-on .tfx-box i { transform: translate(-50%, -50%) scale(1); }
+    .tfx-box i:nth-child(1) { left: 0;    top: 0;    --hi: 0; }
+    .tfx-box i:nth-child(2) { left: 50%;  top: 0;    --hi: 1; }
+    .tfx-box i:nth-child(3) { left: 100%; top: 0;    --hi: 2; }
+    .tfx-box i:nth-child(4) { left: 100%; top: 50%;  --hi: 3; }
+    .tfx-box i:nth-child(5) { left: 100%; top: 100%; --hi: 4; }
+    .tfx-box i:nth-child(6) { left: 50%;  top: 100%; --hi: 5; }
+    .tfx-box i:nth-child(7) { left: 0;    top: 100%; --hi: 6; }
+    .tfx-box i:nth-child(8) { left: 0;    top: 50%;  --hi: 7; }
+
+    /* drag & drop: the selected block starts off-position and a cursor
+       drags it home once its box is drawn */
+    .tfx-drag .tfx-sel {
+      transform: translate(-0.7em, 0.45em) rotate(-2deg);
+      transition: transform 820ms var(--ease-drag) calc(var(--od, 0ms) + 900ms);
+    }
+    .tfx-drag.tfx-on .tfx-sel { transform: none; }
+    .tfx-cursor {
+      position: absolute;
+      right: -26px;
+      bottom: -30px;
+      width: 26px;
+      height: 26px;
+      pointer-events: none;
+      opacity: 0;
+      transform: translate(18px, 18px);
+      transition:
+        opacity   260ms var(--ease-out) calc(var(--od, 0ms) + 620ms),
+        transform 420ms var(--ease-draw) calc(var(--od, 0ms) + 620ms);
+    }
+    .tfx-on .tfx-cursor { opacity: 1; transform: none; animation: tfxCursorOut 400ms var(--ease-out) calc(var(--od, 0ms) + 2000ms) forwards; }
+    @keyframes tfxCursorOut { to { opacity: 0; transform: translate(10px, 12px); } }
+
+    /* highlight block sweeping in behind a word */
+    .tfx-hl { isolation: isolate; transition: color 240ms var(--ease-out) calc(var(--od, 0ms) + 260ms); }
+    .tfx-hl::before {
+      content: '';
+      position: absolute;
+      z-index: -1;
+      inset: 0.06em -0.12em -0.02em;
+      background: var(--tfx-hl);
+      transform: scaleX(0);
+      transform-origin: left center;
+      transition: transform 620ms var(--ease-draw) var(--od, 0ms);
+    }
+    .tfx-on .tfx-hl { color: var(--tfx-hl-fg) !important; }
+    .tfx-on .tfx-hl::before { transform: scaleX(1); }
+
+    /* dashed marquee */
+    .tfx-dash::after {
+      content: '';
+      position: absolute;
+      inset: -0.04em -0.14em -0.02em;
+      border: 1.5px dashed var(--tfx-line);
+      opacity: 0.8;
+      clip-path: inset(0 100% 0 0);
+      transition: clip-path 700ms var(--ease-draw) var(--od, 0ms);
+      pointer-events: none;
+    }
+    .tfx-on .tfx-dash::after { clip-path: inset(-4px); }
+
+    /* pen-tool bezier under a word: the path draws, then anchors + handles pop */
+    .tfx-pen {
+      position: absolute;
+      left: -2%;
+      right: -2%;
+      top: 100%;
+      height: 0.5em;
+      pointer-events: none;
+    }
+    .tfx-pen svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+    .tfx-pen .pen-path {
+      fill: none;
+      stroke: var(--tfx-hl);
+      stroke-width: 3;
+      stroke-linecap: round;
+      vector-effect: non-scaling-stroke;
+      stroke-dasharray: 1;
+      stroke-dashoffset: 1;
+      transition: stroke-dashoffset 900ms var(--ease-draw) var(--od, 0ms);
+    }
+    .tfx-on .tfx-pen .pen-path { stroke-dashoffset: 0; }
+    .tfx-pen .pen-handle {
+      stroke: var(--tfx-line);
+      stroke-width: 1;
+      vector-effect: non-scaling-stroke;
+      opacity: 0;
+      transition: opacity 300ms var(--ease-out) calc(var(--od, 0ms) + 700ms);
+    }
+    .tfx-on .tfx-pen .pen-handle { opacity: 0.6; }
+    .tfx-pen b, .tfx-pen u {
+      position: absolute;
+      left: var(--x);
+      top: var(--y);
+      width: 9px;
+      height: 9px;
+      background: var(--tfx-paper);
+      border: 1.5px solid var(--tfx-line);
+      transform: translate(-50%, -50%) scale(0);
+      transition: transform 380ms var(--ease-pop) calc(var(--od, 0ms) + 760ms + var(--hi, 0) * 60ms);
+    }
+    .tfx-pen u { border-radius: 50%; width: 7px; height: 7px; text-decoration: none; }
+    .tfx-on .tfx-pen b, .tfx-on .tfx-pen u { transform: translate(-50%, -50%) scale(1); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .tfx-word, .tfx-box, .tfx-box i, .tfx-sel, .tfx-hl, .tfx-hl::before, .tfx-dash::after,
+      .tfx-pen .pen-path, .tfx-pen .pen-handle, .tfx-pen b, .tfx-pen u, .tfx-cursor {
+        transition-duration: 1ms !important;
+        transition-delay: 0ms !important;
+      }
+      .tfx-cursor { display: none; }
+    }
+
+    /* ─── SITE BACKGROUND FIELD ───
+       One fixed dark layer behind every section: a dot-grid canvas with film
+       grain and a single soft orange glow; the dots and glow move with
+       scroll (--sp, 0→1). */
+    .bg-field {
+      --grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      overflow: hidden;
+      background: #0B0B0B;
+      pointer-events: none;
+    }
+    /* grain on top of everything in the field */
+    .bg-field::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: var(--grain);
+      opacity: 0.07;
+      mix-blend-mode: overlay;
+    }
+    /* pattern layer */
+    .bg-field::before {
+      content: '';
+      position: absolute;
+      inset: -80px;
+      transform: translate3d(0, calc(var(--sp, 0) * -640px), 0);
+      will-change: transform;
+      -webkit-mask-image: radial-gradient(120% 90% at 50% 40%, #000 30%, transparent 85%);
+      mask-image: radial-gradient(120% 90% at 50% 40%, #000 30%, transparent 85%);
+    }
+    .bg-field span { position: absolute; border-radius: 50%; will-change: transform; }
+    .bg-field .g2, .bg-field .g3 { display: none; }
+    .bg-field .g1 {
+      width: 80vmax; height: 80vmax;
+      left: 50%; top: -45vmax;
+      margin-left: -40vmax;
+      background: radial-gradient(closest-side, rgb(232 80 2 / 0.22), rgb(193 8 1 / 0.08) 55%, transparent);
+      transform: translate3d(calc((var(--sp, 0) - 0.5) * 50vw), calc(var(--sp, 0) * 120vh), 0);
+      animation: bgBreath 14s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+    }
+    @keyframes bgBreath { from { scale: 1; opacity: 0.85; } to { scale: 1.12; opacity: 1; } }
+
+    /* dot-grid canvas */
+    .bg-field::before {
+      background-image: radial-gradient(rgb(255 255 255 / 0.16) 1px, transparent 1.6px);
+      background-size: 24px 24px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .bg-field span { animation: none; }
+    }
+
+    /* ─── CASE-STUDY PAPER ───
+       White sheet, black ink, brutalist boxes (2px black borders, square
+       corners). Each box title has its own accent and its own tfx effect. */
+    .paper-backdrop {
+      display: block;
+      padding: 0;
+      background: rgb(0 0 0 / 0.72);
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+      transition: opacity 260ms var(--ease-out);
+    }
+    .paper-scroll {
+      position: absolute;
+      inset: 0;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      padding: 56px 40px 96px;
+      scrollbar-width: thin;
+      scrollbar-color: rgb(255 255 255 / 0.3) transparent;
+    }
+    .paper {
+      /* the site's dark-theme tokens, re-pointed for black-on-white inside the sheet */
+      --ink: #0A0A0A;
+      --muted: #555555;
+      --surface: #F1F1F1;
+      --surface-2: #EAEAEA;
+      --border: #0A0A0A;
+      --border-sub: #D4D4D4;
+      position: relative;
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 56px 56px 64px;
+      background: #F9F9F9;
+      color: #0A0A0A;
+      transform-origin: 50% 0;
+      box-shadow: 0 40px 120px rgb(0 0 0 / 0.55), 0 0 0 1px rgb(0 0 0 / 0.06);
+    }
+
+    .paper-close {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      z-index: 2;
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      border: 2px solid #0A0A0A;
+      background: #F9F9F9;
+      color: #0A0A0A;
+      cursor: pointer;
+      transition: background 150ms ease-out, color 150ms ease-out;
+    }
+    .paper-close:hover { background: #0A0A0A; color: #F9F9F9; }
+
+    .paper-head {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 40px;
+      align-items: end;
+      padding-bottom: 32px;
+      margin-bottom: 32px;
+      border-bottom: 3px solid #0A0A0A;
+    }
+    .paper-kicker, .pbox-num, .pbox-kicker, .pbox-tags span, .paper-chips span, .pbox-stats span {
+      font-family: var(--f-mono);
+    }
+    .paper-kicker {
+      font-size: 12px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--c-orange);
+      margin-bottom: 14px;
+    }
+    .paper-title {
+      font-family: var(--f-display);
+      font-size: clamp(34px, 4.4vw, 60px);
+      line-height: 1;
+      letter-spacing: -0.03em;
+      margin-bottom: 14px;
+    }
+    .paper-role {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+    .paper-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .paper-chips span, .pbox-tags span {
+      padding: 4px 10px;
+      border: 2px solid #0A0A0A;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .paper-cover { margin: 0; border: 2px solid #0A0A0A; background: #0A0A0A; }
+    .paper-cover img { display: block; width: 100%; height: auto; }
+
+    .paper-grid {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 18px;
+      align-items: start;
+    }
+    .pbox { grid-column: span 12; border: 2px solid #0A0A0A; background: #FFFFFF; }
+    .pbox--s5  { grid-column: span 5; }
+    .pbox--s6  { grid-column: span 6; }
+    .pbox--s7  { grid-column: span 7; }
+
+    /* boxes settle in one after another once the sheet has landed */
+    .pbox { opacity: 0; transform: translateY(26px); }
+    .paper.is-landed .pbox {
+      opacity: 1;
+      transform: none;
+      transition:
+        opacity   500ms var(--ease-out),
+        transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+      transition-delay: calc(var(--bi) * 70ms);
+    }
+
+    .pbox-head {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      padding: 18px 22px 16px;
+      border-bottom: 2px solid #0A0A0A;
+    }
+    .pbox-num { font-size: 12px; font-weight: 700; color: var(--acc); }
+    .pbox-title {
+      /* tfx overlays follow the box accent */
+      --tfx-hl: var(--acc);
+      font-family: var(--f-display);
+      font-size: clamp(20px, 1.8vw, 26px);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+      color: var(--acc);
+    }
+
+    .pbox-body { padding: 20px 22px 24px; }
+    .pbox-body p, .pbox-body li {
+      font-size: 15.5px;
+      line-height: 1.68;
+      color: #1F1F1F;
+    }
+    .pbox-body p + p { margin-top: 12px; }
+    .pbox-body em { font-style: italic; color: #0A0A0A; }
+    .pbox-body strong { color: #0A0A0A; }
+
+    .pbox-list { list-style: none; counter-reset: pb; display: flex; flex-direction: column; }
+    .pbox-list li {
+      position: relative;
+      padding: 14px 0 14px 44px;
+      border-top: 1px solid #E2E2E2;
+    }
+    .pbox-list li:first-child { border-top: 0; padding-top: 0; }
+    .pbox-list li::before {
+      position: absolute;
+      left: 0;
+      top: 14px;
+      font-family: var(--f-display);
+      font-size: 15px;
+      color: var(--acc);
+    }
+    .pbox-list li:first-child::before { top: 0; }
+    ul.pbox-list li::before { content: '■'; font-size: 11px; top: 20px; }
+    ul.pbox-list li:first-child::before { top: 6px; }
+    ol.pbox-list li { counter-increment: pb; }
+    ol.pbox-list li::before { content: counter(pb, decimal-leading-zero); }
+    .pbox--cols .pbox-list { display: grid; grid-template-columns: 1fr 1fr; column-gap: 36px; }
+    .pbox--cols .pbox-list li:nth-child(2) { border-top: 0; padding-top: 0; }
+    .pbox--cols .pbox-list li:nth-child(2)::before { top: 0; }
+
+    .pbox-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+    .pbox-tags span:last-child { background: var(--acc); border-color: var(--acc); color: #F9F9F9; }
+
+    .pbox-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border: 2px solid #0A0A0A;
+      margin-bottom: 18px;
+    }
+    .pbox-stats div { padding: 16px 14px; display: flex; flex-direction: column; gap: 6px; }
+    .pbox-stats div + div { border-left: 2px solid #0A0A0A; }
+    .pbox-stats b { font-family: var(--f-display); font-weight: 400; font-size: clamp(22px, 2.3vw, 34px); line-height: 1; color: #0A0A0A; }
+    .pbox-stats div:first-child b { color: var(--acc); }
+    .pbox-stats span { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #555; }
+    .pbox-note { font-size: 14.5px !important; }
+
+    .pbox-quote { margin: 0; padding-left: 18px; border-left: 4px solid var(--acc); }
+    .pbox-quote p:first-child {
+      font-family: var(--f-display);
+      font-size: 19px;
+      line-height: 1.35;
+      letter-spacing: -0.01em;
+      color: #0A0A0A;
+    }
+    .pbox-quote p:last-child { margin-top: 12px; font-style: italic; color: #555; }
+
+    .pbox-steps { display: grid; grid-template-columns: repeat(3, 1fr); }
+    .pbox-steps > div { padding: 0 22px; }
+    .pbox-steps > div:first-child { padding-left: 0; }
+    .pbox-steps > div:last-child { padding-right: 0; }
+    .pbox-steps > div + div { border-left: 2px solid #0A0A0A; }
+    .pbox-kicker {
+      font-size: 11.5px !important;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--acc) !important;
+      margin-bottom: 10px;
+    }
+
+    /* the original copy-sample styles were written for dark panels */
+    .pbox-copy { color: #1F1F1F; }
+    .pbox-copy :is(p, li, span) { color: inherit; }
+    .pbox-copy :is(.ad-block, .interstitial-card, .reveal-block, .quiz-opt) {
+      background: #F1F1F1;
+      border-color: #0A0A0A;
+      border-radius: 0;
+    }
+    .pbox-copy :is(.ad-hook, .quiz-q-text, .interstitial-headline, .reveal-lead, .advertorial-title) { color: #0A0A0A; }
+    .pbox-copy :is(.ad-label, .quiz-q-num, .interstitial-label, .advertorial-byline) { color: var(--c-orange); font-family: var(--f-mono); }
+    .pbox-copy :is(.ad-cta, .reveal-cta, .advertorial-cta) {
+      background: #0A0A0A;
+      color: #F9F9F9;
+      border-color: #0A0A0A;
+      border-radius: 0;
+    }
+
+    @media (max-width: 900px) {
+      .paper-scroll { padding: 16px 10px 64px; }
+      .paper { padding: 64px 18px 28px; }
+      .paper-head { grid-template-columns: 1fr; gap: 20px; }
+      .pbox--s5, .pbox--s6, .pbox--s7 { grid-column: span 12; }
+      .pbox-stats { grid-template-columns: 1fr 1fr; }
+      .pbox-stats div:nth-child(3) { border-left: 0; }
+      .pbox-stats div:nth-child(n+3) { border-top: 2px solid #0A0A0A; }
+      .pbox-steps { grid-template-columns: 1fr; }
+      .pbox-steps > div { padding: 16px 0; }
+      .pbox-steps > div + div { border-left: 0; border-top: 2px solid #0A0A0A; }
+      .pbox--cols .pbox-list { grid-template-columns: 1fr; }
+      .pbox--cols .pbox-list li:nth-child(2) { border-top: 1px solid #E2E2E2; padding-top: 14px; }
+    }
+
+    /* copy samples: bump to paper reading sizes */
+    .pbox-copy .ad-hook { font-size: 18px; line-height: 1.4; }
+    .pbox-copy :is(.ad-primary, .reveal-note, .reveal-steps li, .advertorial-body p, .interstitial-quote) { font-size: 15.5px; line-height: 1.7; }
+    .pbox-copy .quiz-q-text, .pbox-copy .interstitial-headline, .pbox-copy .reveal-lead { font-family: var(--f-display); font-size: 18px; line-height: 1.3; letter-spacing: -0.01em; }
+    .pbox-copy .quiz-q-num { font-size: 13px; font-weight: 700; }
+    .pbox-copy .quiz-opt { font-size: 14px; padding: 8px 12px; border: 2px solid #0A0A0A; background: #FFFFFF; }
+    .pbox-copy .advertorial-title { font-family: var(--f-display); font-size: 28px; line-height: 1.15; letter-spacing: -0.02em; }
+
+    /* the sheet inside the folder lifts just before it flies out */
+    .folder.is-launching .folder-paper { transform: translateY(-120px) rotate(-3deg); transition-duration: 220ms; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .pbox, .paper.is-landed .pbox { opacity: 1; transform: none; transition: none; }
+    }
+
+    /* Vietnamese text set in the display face: swap to Archivo 900 so
+       diacritics come from the same design instead of a fallback font */
+    .pbox-quote p:lang(vi) { font-family: var(--f-display-vi); font-weight: 900; }
+  </style>
+</head>
+<body>
+<div class="bg-field" aria-hidden="true"><span class="g1"></span><span class="g2"></span><span class="g3"></span></div>
+
+<!-- NAVIGATION -->
+<nav class="nav" id="nav">
+  <a href="/" class="nav-logo">HH</a>
+  <div class="nav-links">
+    <a href="#about"   class="nav-link">About me</a>
+    <a href="#projects" class="nav-link">Projects</a>
+    <a href="#work"    class="nav-link">My Videos</a>
+    <a href="#contact" class="nav-link">Contact</a>
+  </div>
+</nav>
+
+<!-- HERO + SKY: one pinned scene. Starts on the hillside still, scroll
+     scrubs the camera tilt up into the sky, then the problem statement
+     lights up word by word in the stars. -->
+<div class="stack-outer sky-outer" id="skyOuter">
+<div class="stack-panel" style="z-index:1; background:var(--bg);">
+<section class="hero sky-scene" id="problems">
+
+  <div class="hero-bg" aria-hidden="true">
+    <img class="sky-still" src="assets/sky-start.webp" alt="" fetchpriority="high" />
+    <canvas class="sky-canvas" id="skyCanvas"></canvas>
+  </div>
+
+  <!-- everything hero fades out together as the camera starts to move -->
+  <div class="hero-fg" id="heroFg">
+    <div class="hero-overlay" aria-hidden="true"></div>
+
+    <div class="hero-content">
+      <h1 class="hero-title">HOANG HAI</h1>
+
+      <div class="hero-sub">
+        <span class="hero-sub-word">Creative Strategist</span>
+      </div>
+
+      <div class="hero-actions">
+        <a href="#projects" class="btn-pill">
+          View Work
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+            <path d="M1 6h10M6 1l5 5-5 5" stroke="currentColor" stroke-width="1.1"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+        <a href="#contact" class="btn-ghost">Get in touch</a>
+      </div>
+    </div>
+
+    <div class="hero-headline-wrap">
+      <h2 class="hero-headline tfx" data-tfx-auto><span class="em-strong tfx-sel">Where</span> <span class="em-light">an idea</span> <span class="em-strong tfx-hl">rises</span> <span class="em-light tfx-dash">out of the noise</span></h2>
+      <p class="hero-subheadline">Every brand already has a story worth telling, buried in what its customers worry about but never say out loud. My job is finding it before the noise does.</p>
+    </div>
+
+    <div class="scroll-hint" aria-hidden="true">
+      <span class="scroll-label">Scroll</span>
+      <div class="scroll-bar"></div>
+    </div>
+  </div>
+
+  <div class="problems-list" id="problemsList">
+    <p class="problem-paragraph" id="problemParagraph">Meta's Andromeda update merges ads that look alike, so two tests quietly become one and both lose reach. Most accounts still run a handful of ads a month and run out of new angles fast. Even a well-made ad can get marked not relevant, and plenty of content gets watched and liked without ever selling anything. That's the list I've spent the last 3 years actually solving, not just diagnosing.</p>
+  </div>
+
+</section>
+</div>
+</div>
+
+<script>
+  /* Sky scene: scroll progress through #skyOuter drives, in order,
+     hero fade-out → camera tilt (frame sequence on a canvas) → the problem
+     paragraph fading in and lighting up word by word, then a short hold. */
+  (function () {
+    const outer  = document.getElementById('skyOuter');
+    const heroFg = document.getElementById('heroFg');
+    const list   = document.getElementById('problemsList');
+    const para   = document.getElementById('problemParagraph');
+    const canvas = document.getElementById('skyCanvas');
+    const ctx    = canvas.getContext('2d');
+
+    para.innerHTML = para.textContent
+      .split(' ')
+      .map(w => `<span class="word">${w}</span>`)
+      .join(' ');
+    const words = para.querySelectorAll('.word');
+
+    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const FRAME_COUNT = 121;
+    // phones get every other frame: half the download, still smooth under a thumb
+    const step = innerWidth < 768 ? 2 : 1;
+    const frames = [];      // index → HTMLImageElement (only the ones we load)
+    const endImg = new Image();
+    endImg.src = 'assets/sky-end.webp';
+    const startImg = document.querySelector('.sky-still');
+
+    const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+    const range = (p, from, to) => clamp((p - from) / (to - from));
+
+    function loadFrames() {
+      if (reduceMotion) return;
+      for (let i = 0; i < FRAME_COUNT; i += step) {
+        const img = new Image();
+        img.decoding = 'async';
+        img.src = `assets/sky-frames/f${String(i + 1).padStart(3, '0')}.webp`;
+        img.onload = () => { if (Math.abs(i - currentIndex) <= step) draw(); };
+        frames[i] = img;
+      }
+    }
+
+    function sizeCanvas() {
+      const dpr = Math.min(devicePixelRatio || 1, 1.5);
+      canvas.width  = Math.round(canvas.clientWidth * dpr);
+      canvas.height = Math.round(canvas.clientHeight * dpr);
+    }
+
+    // object-fit: cover, drawn by hand
+    function cover(img) {
+      const cw = canvas.width, ch = canvas.height;
+      const iw = img.naturalWidth, ih = img.naturalHeight;
+      const s = Math.max(cw / iw, ch / ih);
+      const w = iw * s, h = ih * s;
+      ctx.drawImage(img, (cw - w) / 2, (ch - h) / 2, w, h);
+    }
+
+    // nearest already-loaded frame at or before i (falls back forward)
+    function frameAt(i) {
+      for (let k = i; k >= 0; k--) if (frames[k]?.complete && frames[k].naturalWidth) return frames[k];
+      for (let k = i; k < FRAME_COUNT; k++) if (frames[k]?.complete && frames[k].naturalWidth) return frames[k];
+      return null;
+    }
+
+    let currentIndex = 0;
+    let videoT = 0;
+
+    function draw() {
+      let img;
+      if (videoT <= 0) img = startImg;
+      else if (videoT >= 1 && endImg.complete && endImg.naturalWidth) img = endImg;
+      else if (reduceMotion) img = videoT < 0.5 ? startImg : endImg;
+      else img = frameAt(currentIndex) || startImg;
+      if (img && img.complete && img.naturalWidth) cover(img);
+    }
+
+    function update() {
+      const rect = outer.getBoundingClientRect();
+      const scrollable = rect.height - innerHeight;
+      if (scrollable <= 0) return;
+      const p = clamp(-rect.top / scrollable);
+
+      // 1. hero copy + overlay fade out as soon as scrolling starts
+      const heroOut = range(p, 0.02, 0.12);
+      heroFg.style.opacity = 1 - heroOut;
+      heroFg.style.transform = `translateY(${-heroOut * 40}px)`;
+      heroFg.style.visibility = heroOut >= 1 ? 'hidden' : '';
+
+      // 2. camera tilts up into the sky
+      videoT = range(p, 0.06, 0.50);
+      const idx = Math.round(videoT * (FRAME_COUNT - 1));
+      const snapped = Math.min(Math.round(idx / step) * step, FRAME_COUNT - 1);
+      if (snapped !== currentIndex || videoT <= 0 || videoT >= 1) {
+        currentIndex = snapped;
+        draw();
+      }
+
+      // 3. paragraph appears in the sky, then lights up word by word
+      const paraIn = range(p, 0.50, 0.56);
+      list.style.opacity = paraIn;
+      list.style.transform = `translateY(${(1 - paraIn) * 24}px)`;
+      const lit = reduceMotion ? words.length : Math.round(range(p, 0.54, 0.90) * words.length);
+      words.forEach((w, i) => w.classList.toggle('lit', i < lit));
+    }
+
+    function resize() { sizeCanvas(); draw(); update(); }
+
+    addEventListener('scroll', update, { passive: true });
+    addEventListener('resize', resize);
+    startImg.complete ? resize() : startImg.addEventListener('load', resize);
+    endImg.addEventListener('load', () => { if (videoT >= 1) draw(); });
+    // don't compete with the first paint for bandwidth
+    if (document.readyState === 'complete') loadFrames();
+    else addEventListener('load', loadFrames);
+    resize();
+  })();
+</script>
+
+<!-- ABOUT / WHO AM I -->
+<section id="about" class="about">
+  <div class="about-pin">
+
+    <!-- copy sits underneath; the figure wipes it in as it walks right -->
+    <div class="about-copy">
+      <p class="about-eyebrow">About me</p>
+      <h2 class="about-title tfx tfx-drag"><span class="tfx-sel">Who Am I?</span></h2>
+      <p class="about-tagline">
+        <span>Strategic.</span>
+        <span>Creative.</span>
+        <span>Curious.</span>
+      </p>
+      <p class="about-bio">In three words, I am strategic, creative and curious. A creative professional with 3+ years of experience in content, visual storytelling and creative production. I am passionate about turning audience insights into creative ideas and meaningful brand experiences. Over the next two years, I aim to grow into a skilled Creative Strategist who can connect audience insights, creative thinking and business objectives to develop impactful brand communication.</p>
+      <a href="#work" class="btn-cta">See my work →</a>
+    </div>
+
+    <!-- big stacked name, parked where the figure stops so he ends up in front of it -->
+    <p class="about-name" aria-hidden="true"><span>Hai</span><span>Tony</span><span>Hoang</span></p>
+
+    <!-- the photo lives on a sheet of paper, same language as the folders -->
+    <div class="about-photo">
+      <div class="profile-card">
+        <span class="profile-tab">Profile · 001</span>
+        <div class="profile-sheet">
+          <div class="profile-img">
+            <img src="HERO PAGE/My photo 3.png" alt="Hoang Hai" />
+          </div>
+          <div class="profile-meta"><span>Hoang Hai</span><span>Creative Strategist</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- WHAT I BRING -->
+<section id="services" class="services-section">
+  <p class="about-eyebrow">Capabilities</p>
+  <h2 class="services-heading tfx">What I <span class="tfx-hl">Bring</span></h2>
+
+  <div class="services-grid">
+    <button type="button" class="sfolder" aria-expanded="false" style="--sf-bg:var(--c-orange); --sf-fg:var(--c-cream);">
+      <span class="sfolder-back" aria-hidden="true"></span>
+      <span class="sfolder-paper">
+        <span class="sfolder-paper-head"><span>01 · Strategy &amp; angles</span><span>Research</span></span>
+        <span class="sfolder-desc">Customer research, the Angle Matrix, and content calendars built on what your customers actually worry about. One brief in, 20 angles and scripts out within a week.</span>
+      </span>
+      <span class="sfolder-front" aria-hidden="true">
+        <span class="sfolder-num">01</span>
+        <span class="sfolder-title">Strategy &amp; angles</span>
+        <span class="sfolder-cta">Click here <span aria-hidden="true">↗</span></span>
+      </span>
+    </button>
+    <button type="button" class="sfolder" aria-expanded="false" style="--sf-bg:var(--c-sand); --sf-fg:var(--c-forest);">
+      <span class="sfolder-back" aria-hidden="true"></span>
+      <span class="sfolder-paper">
+        <span class="sfolder-paper-head"><span>02 · Copywriting &amp; scripts</span><span>Writing</span></span>
+        <span class="sfolder-desc">Ad and video scripts, advertorials, and quiz funnels, written in the words customers already use. One idea per piece, aimed at the objection standing between the viewer and the click. Samples are in the Strategy section below.</span>
+      </span>
+      <span class="sfolder-front" aria-hidden="true">
+        <span class="sfolder-num">02</span>
+        <span class="sfolder-title">Copywriting &amp; scripts</span>
+        <span class="sfolder-cta">Click here <span aria-hidden="true">↗</span></span>
+      </span>
+    </button>
+    <button type="button" class="sfolder" aria-expanded="false" style="--sf-bg:var(--c-rust); --sf-fg:var(--c-cream);">
+      <span class="sfolder-back" aria-hidden="true"></span>
+      <span class="sfolder-paper">
+        <span class="sfolder-paper-head"><span>03 · Funnels &amp; lead generation</span><span>Conversion</span></span>
+        <span class="sfolder-desc">Landing pages, quiz funnels, and follow-up that turn views into leads. One funnel I built brought in $100,000 in revenue over two months.</span>
+      </span>
+      <span class="sfolder-front" aria-hidden="true">
+        <span class="sfolder-num">03</span>
+        <span class="sfolder-title">Funnels &amp; lead generation</span>
+        <span class="sfolder-cta">Click here <span aria-hidden="true">↗</span></span>
+      </span>
+    </button>
+    <button type="button" class="sfolder" aria-expanded="false" style="--sf-bg:var(--c-dark); --sf-fg:var(--c-cream);">
+      <span class="sfolder-back" aria-hidden="true"></span>
+      <span class="sfolder-paper">
+        <span class="sfolder-paper-head"><span>04 · Video &amp; photo production</span><span>Production</span></span>
+        <span class="sfolder-desc">Filming, editing, and photography handled in-house, so an idea goes from script to published without a handoff.</span>
+      </span>
+      <span class="sfolder-front" aria-hidden="true">
+        <span class="sfolder-num">04</span>
+        <span class="sfolder-title">Video &amp; photo production</span>
+        <span class="sfolder-cta">Click here <span aria-hidden="true">↗</span></span>
+      </span>
+    </button>
+  </div>
+
+  <div class="tools-row">
+    <span class="tool-item">Adobe Premiere Pro</span>
+    <span class="tool-sep">·</span>
+    <span class="tool-item">After Effects</span>
+    <span class="tool-sep">·</span>
+    <span class="tool-item">DaVinci Resolve</span>
+    <span class="tool-sep">·</span>
+    <span class="tool-item">CapCut</span>
+    <span class="tool-sep">·</span>
+    <span class="tool-item">Lightroom</span>
+    <span class="tool-sep">·</span>
+    <span class="tool-item">Photoshop</span>
+  </div>
+</section>
+
+<!-- PROJECTS & CAMPAIGNS -->
+<section id="projects" class="copy-section">
+
+  <div class="copy-header">
+    <p class="copy-eyebrow">Projects &amp; Campaigns</p>
+    <h2 class="copy-title tfx">Selected <span class="tfx-bez">Campaigns</span></h2>
+    <div class="copy-bio">
+      <p>A closer look at campaigns I've led end to end, from the insight that shaped the idea to the numbers that proved it worked. Each one breaks down the full workflow, the result, and an honest read on what I'd do differently next time.</p>
+    </div>
+  </div>
+
+</section>
+
+<!-- PROJECT FOLDERS (sticky, each one slides up over the last; tabs stay visible) -->
+<div id="projectsGrid" class="folder-stack"></div>
+
+<!-- PROJECT CASE MODAL: a sheet of paper that flies out of the folder -->
+<div class="modal-backdrop paper-backdrop" id="projectModalBackdrop" role="dialog" aria-modal="true" aria-label="Case study" data-lenis-prevent>
+  <div class="paper-scroll" id="paperScroll">
+    <article class="paper" id="projectPaper">
+      <button class="paper-close" id="projectModalClose" aria-label="Close case study">
+        <svg width="14" height="14" viewBox="0 0 13 13" fill="none" aria-hidden="true">
+          <path d="M1 1l11 11M12 1L1 12" stroke="currentColor" stroke-width="2" stroke-linecap="square"/>
+        </svg>
+      </button>
+      <div id="projectModalBody"></div>
+    </article>
+  </div>
+</div>
+
+<script>
+  const projectsSection = document.getElementById('projects');
+  const projectsObs = new IntersectionObserver(([e]) => {
+    if (e.isIntersecting) { projectsSection.classList.add('is-visible'); projectsObs.disconnect(); }
+  }, { threshold: 0.1 });
+  projectsObs.observe(projectsSection);
+
+  /* ── Projects & Campaigns ──
+     Placeholder entries — swap for real content from PROJECTS-CONTENT.md.
+     workflow / result / reflection left as `null` render a "coming soon" note. */
+  const projectItems = [
+    {
+      id: 'junsport-summer-camp',
+      layout: 'campaign',
+      title: 'Junsport Summer Camp',
+      role: 'Marketing Executive, Creative Strategist',
+      skills: ['Campaign Strategy', 'Audience Research', 'Content Direction', 'Video Production'],
+      cover: 'PROJECTS/Cover YT.png',
+      description: 'Basketball academy for school-age kids in Hanoi. Every summer break, parents go looking for extra activities for their kids, and Junsport Summer Camp is positioned as the answer — not a basketball academy first, but a safe playground for a kid to grow in every way.',
+      workflow: {
+        strategy: [
+          'Parent research turned up a fear, not a feature gap: is this a scam, is it safe, what does my kid actually get. That ruled out a pitch built around basketball itself.',
+          'So Junsport isn\'t positioned as a basketball academy, it\'s positioned as a safe playground for a kid to grow all-round, which is what actually answers the safety and benefit questions parents were asking.',
+          'One line carries the whole campaign: "Mùa hè tại Jun là cơ hội để mọi bạn nhỏ rèn bản lĩnh không bỏ cuộc, cho đến khi sự tự tin trở thành thói quen bền vững" (summer at Jun is every kid\'s chance to build the resilience to never quit, until confidence becomes a lasting habit). The TOF video, the Q&A, and the offer all restate it instead of pitching something new each time.',
+          'TOF doesn\'t open with basketball, it opens with a reframe parents already believe: what looks like willpower is actually a habit, built the same way Junsport already trains, through reps, not talent.',
+          'BOF answers the fear list directly instead of a features list: an attendance-check app and after-class reports so "safe" isn\'t just a claim, named coaches and teammates, and a number a copycat can\'t casually repeat, 50+ courts across Hanoi.',
+          'The offer\'s urgency comes from the calendar, not a countdown: sign up while summer keeps a kid active, so the habit doesn\'t wind down the moment school starts back.',
+        ],
+        contentDirection: [
+          { type: 'quote',
+            vi: 'Mùa hè tại Jun là cơ hội để mọi bạn nhỏ rèn bản lĩnh không bỏ cuộc, cho đến khi sự tự tin trở thành thói quen bền vững.',
+            en: 'Summer at Jun is every kid\'s chance to build the resilience to never quit, until confidence becomes a lasting habit.',
+          },
+          { type: 'para', heading: 'TOF · Awareness (why basketball)',
+            html: 'Tell a story parents and kids already recognize: never giving up. The reframe carries it, <em>Thứ mình tưởng là ý chí, thực ra là thói quen</em> (what looks like willpower is actually a habit), built through the same practice reps a kid runs at Junsport. Show what that summer actually gives them, not what basketball teaches in general.',
+          },
+          { type: 'para', heading: 'BOF · Why Jun (Summer Q&A)',
+            html: 'Same Q&A format the brand already runs for Back to School, answering the fear list directly instead of a features list: a safe environment backed by an attendance-check app and after-class reports, strong coaches and teammates, and a facility number a copycat can\'t casually repeat, 50+ courts across Hanoi.',
+          },
+          { type: 'para', heading: 'BOF · Why now (the offer)',
+            html: 'A straightforward deal timed to Jun\'s own 12th birthday in June, not the child\'s, framed as a gift rather than a discount. Urgency comes from the calendar itself: sign up while summer keeps a kid active, so the new habit doesn\'t wind down the moment school starts back.',
+          },
+        ],
+      },
+      result: {
+        stats: [
+          { v: '2,500', l: 'Leads' },
+          { v: '2.82M', l: 'Reach' },
+          { v: '30K', l: 'Link Clicks' },
+          { v: '1.06%', l: 'CTR' },
+        ],
+        note: '66 posts over 8 weeks (Apr–Jun). Page-wide over the same window: 9.9M views (+70.7%), 1.4M viewers (+32.6%), 19.2K content interactions (+58.5%), 64.7K profile visits (+22.5%), 674 new follows (+31.4%). 96% of reach came from paid amplification, 4% organic (112K).',
+      },
+      reflection: {
+        worked: [
+          'Paid amplification did its job at the top of the funnel. 2.82M cumulative reach and 1,566,549 3-second views mean the campaign reached parents outside Junsport\'s existing followers, exactly what a summer enrollment push needs each year: new eyes, not just returning parents.',
+          'It still converted, even off mostly cold reach. 30,046 link clicks against 2.82M reach is roughly a 1.06% CTR, and 60,704 total clicks show people engaging with the post itself (photo swipes, "see more"), not just scrolling past, despite most viewers having zero prior context on Junsport.',
+          'One idea carried through kept the message legible to a cold, ad-driven audience. Cold reach means most viewers had no context on Junsport going in, so keeping the video to a single idea (no stacked USPs, no price, no schedule) was what let them understand and click within a few seconds.',
+        ],
+        improve: [
+          '96% of reach came from ads, only 4% organic (112,106 out of 2.82M). That\'s a budget dependency, not a creative strength: reach drops close to zero the moment spend stops. Next time I\'d treat that 112K organic number as the real scorecard for the creative itself, testing hooks against a "scream" bar (different enough that someone would share it unprompted) instead of judging success by total reach bought.',
+          '1-minute retention is genuinely weak. 18,453 out of 1,566,549 people who watched past 3 seconds, about 1.2%, made it to the 1-minute mark. Whatever holds attention for the first 3 seconds (thumbnail, targeting) isn\'t what holds it through the video. I\'d front-load the emotional beat and cut anything before the reframe line instead of building up to it.',
+          'Total clicks (60,704) run almost double link clicks (30,046). Nearly half the click activity stayed on-platform, expanding photos, reading more, tapping the profile, instead of leaving for the actual destination. I\'d tighten the caption and the on-asset CTA so more of that click intent converts into an actual link click, since "see more" doesn\'t move anyone closer to enrolling.',
+          'RCS (react + comment + share) of 12,814 against 2.82M reach is about 0.45%, thin for 66 posts over 8 weeks. Spreading budget and production across 66 posts likely diluted attention instead of concentrating it. Next round I\'d rather run 3 genuinely different hook variants on the single strongest concept than 66 posts of roughly equal weight.',
+        ],
+      },
+    },
+    {
+      id: 'burnforge',
+      layout: 'copy',
+      title: 'BurnForge Shred',
+      role: 'Creative Strategist, Copywriter',
+      skills: ['Funnel Strategy', 'Quiz Copy', 'Meta Ads', 'A/B Testing'],
+      cover: 'PROJECTS/BurnForge Cover.png',
+      description: 'A cold-traffic Meta ad feeding a 6-question quiz funnel, with message-matched testimonials and a result-page reveal built to make the offer feel earned, not sold.',
+      format: 'Meta ad + quiz funnel',
+      status: 'Pre-launch sample',
+      overview: 'A thermogenic, appetite-control supplement for men 30–55. One stick a day, mixed with water, taken 20–30 minutes before breakfast. Full label disclosure, no proprietary blend, and a 90-day money-back guarantee, three times the industry standard. $98, launching at $49 for life.',
+      strategy: [
+        'The ad carries the identity hook and defers product name, mechanism, and guarantee to the quiz result, so the pitch isn\'t made twice and the ad itself carries close to zero compliance surface.',
+        '<strong>Q1</strong> sorts by identity first. That decides everything downstream.',
+        '<strong>Q2 + Q3</strong> stay on the single strongest desire from the research, quieting the hunger: first what it is, then when it hits.',
+        'The first interstitial lands right where drop-off usually starts in a quiz this length, and leads with proof on that exact desire.',
+        '<strong>Q5</strong> sits right before the second interstitial, since the result page\'s message match keys off this one answer more than off Q1.',
+        '<strong>Q6</strong> closes with a commitment, not a discovery question, so the reveal\'s simplicity claim reads as a direct answer.',
+      ],
+      copyType: 'quiz',
+      ad: {
+        label: 'Meta Ad · Cold-Traffic Entry (TOF)',
+        hooks: [
+          'Be your kid\'s superhero dad again.',
+          'Don\'t let your 10-year-old outrun you at the park.',
+        ],
+        primary: 'Maybe it\'s the extra weight that crept on somewhere between work and everything else. Maybe it\'s the energy that used to be there.\n\nWhatever it is, it\'s standing between you and keeping up the way you used to.\n\nAnd it shows up in all the moments that mean the most.\n\nTag at the park, and you\'re the one who taps out first. Not because you don\'t want to keep going. Your body just doesn\'t let you anymore.\n\nHe asks if you want to toss the ball after dinner, and you hear yourself say maybe tomorrow. Again.\n\nHe\'s not going to be ten forever, and neither of you gets those afternoons back.\n\nCould be the weight. Could be the energy crashing every afternoon. Could be something you haven\'t connected to any of this yet. Usually it\'s one specific thing making this harder than it needs to be, not a lack of trying.\n\nTake about 60 seconds to find out which one it actually is for you.',
+        cta: 'Take the 60-second check →',
+      },
+      steps: [
+        { q: 'Q1', text: 'Which one sounds like you right now?', opts: [
+          'Winded chasing my kids at the park',
+          'Standing in front of the fridge again at 10pm',
+          'Three coffees in and still hitting a wall by 2pm',
+          'Stuck at the same body fat no matter what you do',
+          'None of these, just here to see what this is',
+        ]},
+        { q: 'Q2', text: 'What\'s actually been getting in the way?', opts: [
+          'Clean all day, then 10pm happens',
+          '3pm is where the whole day falls apart',
+          'You track every gram and you\'re still starving',
+          'You\'ve tried everything and you\'re still hungry',
+        ]},
+        { q: 'Q3', text: 'When does it usually hit hardest?', opts: [
+          'Late at night, once everyone\'s asleep',
+          '3pm, like clockwork',
+          'All day, it never really lets up',
+          'Not really a craving thing for me',
+        ]},
+        { interstitial: {
+          headline: 'We\'ve found a way to quiet the cravings by day 7.',
+          quotes: [
+            { text: 'Cravings just disappeared.', name: 'Samuel, verified buyer' },
+            { text: 'Fewer cravings within 30 days.', name: 'Charles H., verified buyer' },
+          ],
+        }},
+        { q: 'Q4', text: 'What\'s your day usually look like?', opts: [
+          'Desk job, sharp for an hour then foggy the rest of the day',
+          'I train, the gut just won\'t move',
+          'On the road for work, no real routine',
+        ]},
+        { q: 'Q5', text: 'What matters most to you right now?', opts: [
+          'Losing the fat for good',
+          'Having steady energy, no crash',
+          'Getting the cravings under control',
+          'Staying sharp without the jitters',
+        ]},
+        { interstitial: {
+          headline: '~18 lbs. That\'s the average loss in the first 12 weeks.',
+          quotes: [
+            { text: 'Lost 12 pounds in 6 weeks.', name: 'Ryan B.' },
+            { text: 'Down 8 lbs and feeling stronger than ever.', name: 'Mike J.' },
+          ],
+        }},
+        { q: 'Q6', text: 'Be honest, how much time do you actually have for this?', opts: [
+          'I\'ll make time if it actually works',
+          'Every plan assumes 90 minutes, I have 20',
+          'I already train, I just need this part solved',
+        ]},
+      ],
+      reveal: {
+        checklist: ['Main blocker: identified', 'Craving pattern: identified', 'Activity level: identified', 'Goal: locked in'],
+        lead: 'You\'re not imagining it. Here\'s exactly what\'s been in the way.',
+        note: 'Based on your answers, here\'s what actually needs to happen, in order:',
+        list: [
+          'Quiet the hunger signal first. Not more willpower, the actual signal driving it.',
+          'Keep the energy steady through the day. No crash, no third coffee.',
+          'Let the fat-burning happen on its own, once the first two are handled.',
+        ],
+        closing: 'Most people try to jump straight to step 3. That\'s why it doesn\'t stick.',
+        cta: 'See what handles all three →',
+      },
+      whyItWorks: [
+        'Q1 sorts by identity before anything else, so every question after it is already narrowed to the right person, instead of asking the same 6 questions to 5 different avatars and hoping one lands.',
+        'Q2 and Q3 stay on the single strongest desire from research instead of covering all of them, first naming what it is, then when it hits, so by the third question the reader feels specifically understood, not generally profiled.',
+        'The first interstitial sits right where drop-off usually starts in a quiz this length, and it leads with proof on the exact desire just confirmed, timing the reassurance to the moment attention would otherwise leave.',
+        'Q5 sits right before the second interstitial on purpose, since the result page\'s message match keys off this one answer more than off Q1: the reveal needs the freshest signal, not the first one.',
+        'Q6 closes on a commitment question, how much time do you actually have, not a discovery question, so the reveal can answer back in the same register: a decision already made, not a new pitch being made.',
+        'The reveal reads like a diagnosis, not an offer: a checklist of what\'s now identified, 3 ordered steps, and a line about why most people fail (they skip to step 3). The product is what handles all three, not the headline of the page.',
+      ],
+    },
+    {
+      id: 'purecrest',
+      layout: 'copy',
+      title: 'PureCrest',
+      role: 'Copywriter',
+      skills: ['Advertorial Copy', 'MOFU Strategy', 'Brand Voice'],
+      cover: 'PROJECTS/PureCrest Cover.png',
+      description: 'A solution-aware advertorial reframing a recurring skin-fold rash as a treatment gap, not a personal failure, for a reader who already tried the standard cabinet of remedies.',
+      format: 'Advertorial (MOFU)',
+      status: 'Writing sample',
+      overview: 'Skin-fold treatment brand. Format: short advertorial, editorial-style web page. Objective: MOFU, for a reader who is solution-aware, already knows the term "intertrigo," already tried the standard remedies, had it clear temporarily, and watched it return.',
+      strategy: [
+        'Awareness stage assumes she already knows the name and has tried the standard remedies correctly, so the villain can\'t be "didn\'t know what to use."',
+        'The villain becomes: every product she\'s tried treats the rash sitting on the skin. None of them treat the fold itself, the moisture and friction that let a new rash start the moment the old one clears.',
+        'Emotional entry point starts at the exact rhythm of recurrence, cleared then back by Thursday, since that repeated cycle, not the first flare-up, is the actual wound for this audience.',
+        'Walks through the realistic escalating sequence most women actually go through (baby powder → zinc cream → antifungal cream → hydrocortisone), so she recognizes her own real effort rather than feeling talked down to.',
+        'No invented doctor name or credential. Quotes stay attributed generically, consistent with the compliance discipline already established for this brand\'s asset history.',
+        'Offer stays soft at the close: bundle plus 90-day guarantee, not a full price stack.',
+      ],
+      copyType: 'advertorial',
+      article: {
+        title: 'Why Does This Miserable Intertrigo Rash Keep Coming Back?',
+        byline: 'By Diane Foster, Health Reporter · Published September 7, 2026',
+        blocks: [
+          { p: 'If you\'ve dealt with a rash in a fold, under the breast, the belly, the groin, you already know this rhythm. Baby powder tonight, gone by morning. Back again by Thursday. Baby powder again.' },
+          { p: '"This is so embarrassing to ask, but I need advice about intertrigo... I feel like I\'m alone." She wasn\'t, dozens of women answered that thread within a day, most of them with the same rhythm: something worked for a week, then didn\'t.' },
+          { p: 'So you try the next thing. Baby powder first, because it\'s already in the house. Then a zinc cream, the kind made for diaper rash, because someone online swore by it. Then an antifungal cream, because a friend or a pharmacist mentioned yeast. One woman tried the antifungal powder specifically and said it "did nothing and actually seemed to irritate my skin more than soothe it." Then hydrocortisone for the itching, which helps the itch and does nothing for the rash underneath.' },
+          { cta: 'If that list sounds familiar, here\'s what\'s actually different →' },
+          { p: 'One source writing about intertrigo directly says it plainly: "once you get intertrigo, you will continue to get it somewhere or other pretty much forever unless the skin folds are eliminated," and calls it a recurring, chronic condition to manage, not a rash to clear once. Every cream in that cabinet treats the rash sitting on the skin.' },
+          { p: 'None of them treat the fold itself, the moisture and friction and heat trapped between two surfaces of skin all day, which is the actual reason a new rash shows up the moment the old one clears.' },
+          { cta: 'That\'s the specific thing this brand was built to go after →' },
+          { p: 'Look at what\'s actually in most people\'s cabinets right now: a zinc diaper cream made for babies, an antifungal shampoo repurposed as a body wash, a men\'s jock-itch wash used somewhere it was never labeled for. None of it was designed for a skin fold specifically. All of it was borrowed from somewhere else, pressed into service because nothing built for this actually existed on the shelf next to it.' },
+          { p: 'This treatment was built for the fold, not the rash sitting on top of it. Same reason it clears, different reason it\'s meant to keep from coming back.' },
+          { cta: 'Two minutes now, before Thursday rolls around again →' },
+          { p: 'Try it for 90 days. If it\'s not the one that finally holds, you get your money back.' },
+        ],
+      },
+      whyItWorks: [
+        'It matches her exact awareness stage instead of guessing at it: she\'s already solution-aware, so the piece opens at the recognition beat, not a remedial explainer she doesn\'t need and would skip past.',
+        'The villain is a real redefinition, not a generic complaint: the problem stops being "which cream" and becomes "every cream treats the surface, not the fold," which removes the objection "I already tried everything" before she can raise it herself.',
+        'Walking through the sequence she actually lived (baby powder, zinc cream, antifungal, hydrocortisone) is ultra-specific enough that she recognizes her own effort, which lowers her guard before the pitch instead of a generic empathy line that could apply to anyone.',
+        'No invented doctor or credential. In a compliance-sensitive category, one fake authority marker would put the one real claim, the mechanism logic, under suspicion too.',
+        'The close stays soft (bundle plus 90-day guarantee) because she\'s tired of products that over-promise. A stacked, hyped offer here would read like the exact remedies that already let her down.',
+      ],
+    },
+  ];
+
+  // Dark palette, one per folder, cycling if there are more projects than colors
+  // palette folders, each with the text colour that reads on it
+  const folderColors = [
+    { bg: 'var(--c-orange)', fg: 'var(--c-cream)' },
+    { bg: 'var(--c-dark)',   fg: 'var(--c-cream)' },
+    { bg: 'var(--c-sand)',   fg: 'var(--c-forest)' },
+    { bg: 'var(--c-sky)',    fg: 'var(--c-forest)' },
+  ];
+
+  function projectFolderHTML(p, i) {
+    const num = String(i + 1).padStart(2, '0');
+    const bg = folderColors[i % folderColors.length];
+    return `
+      <article class="folder" data-id="${p.id}" style="--i:${i}; --folder-bg:${bg.bg}; --folder-fg:${bg.fg}; z-index:${i + 1};">
+        <div class="folder-back" aria-hidden="true">
+          <span class="folder-tab">✦ <span class="folder-tab-word">Project</span> ${num}</span>
+        </div>
+        <div class="folder-paper" aria-hidden="true">
+          <span>Case study · ${p.skills[0]}</span>
+          <span class="folder-paper-tag">Open ↗</span>
+        </div>
+        <div class="folder-card">
+          <div class="folder-info">
+            <p class="folder-num">${num} / ${String(projectItems.length).padStart(2, '0')}</p>
+            <h3 class="folder-title">${p.title}</h3>
+            <p class="folder-role">${p.role}</p>
+            <p class="folder-desc">${p.description}</p>
+            <div class="folder-skills">
+              ${p.skills.map(s => `<span class="skill-chip">${s}</span>`).join('')}
+            </div>
+            <button type="button" class="folder-view-btn" data-id="${p.id}">
+              View Project <span aria-hidden="true">↗</span>
+            </button>
+          </div>
+          ${p.cover ? `
+            <div class="folder-image">
+              <img src="${p.cover}" alt="${p.title}" loading="lazy" />
+            </div>` : ''}
+        </div>
+      </article>`;
+  }
+
+  document.getElementById('projectsGrid').innerHTML = projectItems.map(projectFolderHTML).join('');
+
+  function contentDirectionBlockHTML(block) {
+    if (block.type === 'quote') {
+      return `
+        <div class="workflow-quote">
+          <p class="workflow-quote-vi">"${block.vi}"</p>
+          <p class="workflow-quote-en">${block.en}</p>
+        </div>`;
+    }
+    if (block.type === 'para') {
+      return `
+        <div class="workflow-group">
+          <p class="workflow-group-heading">${block.heading}</p>
+          <p>${block.html}</p>
+        </div>`;
+    }
+    // legacy bullet-list group
+    return `
+      <div class="workflow-group">
+        <p class="workflow-group-heading">${block.heading}</p>
+        <ul>${block.items.map(i => `<li>${i}</li>`).join('')}</ul>
+      </div>`;
+  }
+
+  function workflowHTML(workflow) {
+    if (!workflow) return `<p class="project-placeholder">Full workflow coming soon.</p>`;
+
+    // flat list of plain steps
+    if (Array.isArray(workflow) && typeof workflow[0] === 'string') {
+      return `<div class="case-block"><p class="case-block-title">Full workflow</p><ol>${workflow.map(s => `<li>${s}</li>`).join('')}</ol></div>`;
+    }
+
+    // legacy: flat array of grouped/quote blocks (no separate strategy)
+    if (Array.isArray(workflow)) {
+      return `<div class="case-block"><p class="case-block-title">Full workflow</p>${workflow.map(contentDirectionBlockHTML).join('')}</div>`;
+    }
+
+    // strategy (why) + content direction (tactics per funnel stage)
+    const strategyHTML = workflow.strategy
+      ? `<div class="case-block" style="margin-bottom:36px;">
+           <p class="case-block-title">Strategy</p>
+           <ol>${workflow.strategy.map(s => `<li>${s}</li>`).join('')}</ol>
+         </div>`
+      : '';
+    const contentDirectionHTML = workflow.contentDirection
+      ? `<div class="case-block">
+           <p class="case-block-title">Content direction</p>
+           ${workflow.contentDirection.map(contentDirectionBlockHTML).join('')}
+         </div>`
+      : '';
+    return strategyHTML + contentDirectionHTML;
+  }
+
+  function resultHTML(result) {
+    if (!result) return `<p class="project-placeholder">Result coming soon.</p>`;
+    if (typeof result === 'string') return `<p>${result}</p>`;
+    const stats = result.stats
+      ? `<div class="modal-stats" style="margin-bottom:18px;">
+           ${result.stats.map(s => `<div class="modal-stat"><span class="modal-stat-value">${s.v}</span><span class="modal-stat-label">${s.l}</span></div>`).join('')}
+         </div>`
+      : '';
+    const note = result.note ? `<p>${result.note}</p>` : '';
+    return stats + note;
+  }
+
+  function reflectionHTML(reflection) {
+    const worked = reflection?.worked
+      ? `<ul>${reflection.worked.map(w => `<li>${w}</li>`).join('')}</ul>`
+      : `<p class="project-placeholder">Coming soon.</p>`;
+    const improve = reflection?.improve
+      ? `<ul>${reflection.improve.map(w => `<li>${w}</li>`).join('')}</ul>`
+      : `<p class="project-placeholder">Coming soon.</p>`;
+    return `
+      <div class="reflection-grid">
+        <div class="reflection-col reflection-worked">
+          <p class="case-block-title">Why it worked</p>
+          ${worked}
+        </div>
+        <div class="reflection-col reflection-improve">
+          <p class="case-block-title">What I'd improve</p>
+          ${improve}
+        </div>
+      </div>`;
+  }
+
+  /* ── "Copy" layout (BurnForge, PureCrest): Overview / The copy / Why it works ── */
+  function overviewTabHTML(p) {
+    return `
+      <div class="modal-meta" style="margin-bottom:24px;">
+        <span class="modal-brand">${p.format}</span>
+        <span class="modal-cat-badge" style="color:var(--amber);background:rgb(232 80 2 / 0.15)">${p.status}</span>
+      </div>
+      <div class="case-block" style="margin-bottom:32px;">
+        <p class="case-block-title">Brand overview</p>
+        <p>${p.overview}</p>
+      </div>
+      <div class="case-block">
+        <p class="case-block-title">Strategy</p>
+        <ol>${p.strategy.map(s => `<li>${s}</li>`).join('')}</ol>
+      </div>`;
+  }
+
+  function quizStepsHTML(p) {
+    return p.steps.map(s => {
+      if (s.interstitial) {
+        const quotes = s.interstitial.quotes.map(q => `<p class="interstitial-quote">"${q.text}" <span>— ${q.name}</span></p>`).join('');
+        return `
+          <div class="interstitial-card">
+            <p class="interstitial-label">Interstitial</p>
+            <p class="interstitial-headline">${s.interstitial.headline}</p>
+            ${quotes}
+          </div>`;
+      }
+      return `
+        <div class="quiz-step">
+          <span class="quiz-q-num">${s.q}</span>
+          <p class="quiz-q-text">${s.text}</p>
+          <div class="quiz-options">
+            ${s.opts.map(o => `<span class="quiz-opt">${o}</span>`).join('')}
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function quizCaseHTML(p) {
+    return `
+      <div class="ad-block">
+        <p class="ad-label">${p.ad.label}</p>
+        <p class="ad-hook">${p.ad.hooks.join('<br>')}</p>
+        <p class="ad-primary">${p.ad.primary.replace(/\n/g, '<br>')}</p>
+        <span class="ad-cta">${p.ad.cta}</span>
+      </div>
+      <div class="quiz-flow">${quizStepsHTML(p)}</div>
+      <div class="reveal-block">
+        <div class="reveal-checklist">
+          ${p.reveal.checklist.map(c => `<span class="reveal-check">${c}</span>`).join('')}
+        </div>
+        <p class="reveal-lead">${p.reveal.lead}</p>
+        <p class="reveal-note">${p.reveal.note}</p>
+        <ol class="reveal-steps">${p.reveal.list.map(l => `<li>${l}</li>`).join('')}</ol>
+        <p class="reveal-note">${p.reveal.closing}</p>
+        <span class="reveal-cta">${p.reveal.cta}</span>
+      </div>`;
+  }
+
+  function advertorialCaseHTML(p) {
+    const blocks = p.article.blocks.map(b =>
+      b.cta ? `<span class="advertorial-cta">${b.cta}</span>` : `<p>${b.p}</p>`
+    ).join('');
+    return `
+      <p class="advertorial-title">${p.article.title}</p>
+      <p class="advertorial-byline">${p.article.byline}</p>
+      <div class="advertorial-body">${blocks}</div>`;
+  }
+
+  function copyTabHTML(p) {
+    return p.copyType === 'quiz' ? quizCaseHTML(p) : advertorialCaseHTML(p);
+  }
+
+  function whyItWorksTabHTML(p) {
+    return p.whyItWorks
+      ? `<div class="case-block reflection-worked"><ul>${p.whyItWorks.map(w => `<li>${w}</li>`).join('')}</ul></div>`
+      : `<p class="project-placeholder">Why it works coming soon.</p>`;
+  }
+
+  /* ── Case-study paper: brutalist boxes, each titled in its own colour
+     with its own typography effect (reusing the site's tfx system) ── */
+  const BOX_ACCENTS = ['var(--c-orange)', 'var(--c-rust)', '#0A0A0A', 'var(--c-flame)', 'var(--c-gray)'];
+  const BOX_FX = ['sel', 'hl', 'dash', 'bez', 'drag'];
+
+  function boxTitleHTML(title, fx) {
+    const inner = {
+      sel:  `<span class="tfx-sel">${title}</span>`,
+      drag: `<span class="tfx-sel">${title}</span>`,
+      hl:   `<span class="tfx-hl">${title}</span>`,
+      dash: `<span class="tfx-dash">${title}</span>`,
+      bez:  `<span class="tfx-bez">${title}</span>`,
+    }[fx];
+    return `<h3 class="pbox-title tfx tfx--light${fx === 'drag' ? ' tfx-drag' : ''}">${inner}</h3>`;
+  }
+
+  function paperBoxes(p) {
+    const list = (items, tag = 'ul') => `<${tag} class="pbox-list">${items.map(i => `<li>${i}</li>`).join('')}</${tag}>`;
+    if (p.layout === 'copy') {
+      return [
+        { t: 'Brand overview', span: 5, body: `
+            <div class="pbox-tags"><span>${p.format}</span><span>${p.status}</span></div>
+            <p>${p.overview}</p>` },
+        { t: 'Strategy', span: 7, body: list(p.strategy, 'ol') },
+        { t: 'The copy', span: 12, body: `<div class="pbox-copy">${copyTabHTML(p)}</div>` },
+        { t: 'Why it works', span: 12, body: list(p.whyItWorks, 'ol'), cols: true },
+      ];
+    }
+    const w = p.workflow, r = p.result, f = p.reflection;
+    const quote = w.contentDirection.find(b => b.type === 'quote');
+    const paras = w.contentDirection.filter(b => b.type === 'para');
+    return [
+      { t: 'Brand overview', span: 5, body: `<p>${p.description}</p>` },
+      { t: 'Result', span: 7, body: `
+          <div class="pbox-stats">${r.stats.map(s => `<div><b>${s.v}</b><span>${s.l}</span></div>`).join('')}</div>
+          <p class="pbox-note">${r.note}</p>` },
+      { t: 'Strategy', span: 7, body: list(w.strategy, 'ol') },
+      { t: 'Key message', span: 5, body: `
+          <blockquote class="pbox-quote">
+            <p lang="vi">“${quote.vi}”</p>
+            <p>${quote.en}</p>
+          </blockquote>` },
+      { t: 'Content direction', span: 12, body: `
+          <div class="pbox-steps">${paras.map(b => `
+            <div><p class="pbox-kicker">${b.heading}</p><p>${b.html}</p></div>`).join('')}
+          </div>` },
+      { t: 'Why it worked', span: 6, body: list(f.worked) },
+      { t: 'What I’d improve', span: 6, body: list(f.improve) },
+    ];
+  }
+
+  function paperHTML(p) {
+    const idx = projectItems.indexOf(p) + 1;
+    const boxes = paperBoxes(p).map((b, i) => `
+      <section class="pbox pbox--s${b.span}${b.cols ? ' pbox--cols' : ''}" style="--acc:${BOX_ACCENTS[i % BOX_ACCENTS.length]}; --bi:${i};">
+        <header class="pbox-head">
+          <span class="pbox-num">${String(i + 1).padStart(2, '0')}</span>
+          ${boxTitleHTML(b.t, BOX_FX[i % BOX_FX.length])}
+        </header>
+        <div class="pbox-body">${b.body}</div>
+      </section>`).join('');
+    return `
+      <header class="paper-head">
+        <div class="paper-head-text">
+          <p class="paper-kicker">Case study · ${String(idx).padStart(2, '0')} / ${String(projectItems.length).padStart(2, '0')}</p>
+          <h2 class="paper-title">${p.title}</h2>
+          <p class="paper-role">${p.role}</p>
+          <div class="paper-chips">${p.skills.map(s => `<span>${s}</span>`).join('')}</div>
+        </div>
+        ${p.cover ? `<figure class="paper-cover"><img src="${p.cover}" alt="${p.title}" /></figure>` : ''}
+      </header>
+      <div class="paper-grid">${boxes}</div>`;
+  }
+
+  const backdrop = document.getElementById('projectModalBackdrop');
+  const paperScroll = document.getElementById('paperScroll');
+  const paper = document.getElementById('projectPaper');
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  let launchedFrom = null;
+
+  function openProjectModal(id, folder) {
+    const p = projectItems.find(x => x.id === id);
+    if (!p) return;
+    document.getElementById('projectModalBody').innerHTML = paperHTML(p);
+    // box-title effects start only once the sheet has landed
+    const land = () => { paper.classList.add('is-landed'); window.tfx && window.tfx.mount(paper); };
+    paperScroll.scrollTop = 0;
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+
+    // 1. the sheet inside the folder lifts first…
+    launchedFrom = folder || null;
+    if (folder) folder.classList.add('is-launching');
+    const delay = folder && !reduceMotion.matches ? 180 : 0;
+
+    setTimeout(() => {
+      backdrop.classList.add('open');
+      paper.classList.remove('is-landed');
+      if (reduceMotion.matches) return land();
+
+      // 2. …then flies out along an arc to the centre (FLIP from the folder's sheet)
+      const src = (folder && (folder.querySelector('.folder-paper')?.offsetParent
+                   ? folder.querySelector('.folder-paper') : folder).getBoundingClientRect())
+                  || { left: innerWidth / 2 - 100, top: innerHeight, width: 200 };
+      const dst = paper.getBoundingClientRect();
+      const s = Math.max(0.3, Math.min(1, src.width / dst.width));
+      const dx = (src.left + src.width / 2) - (dst.left + dst.width / 2);
+      const dy = src.top - dst.top;
+      paper.animate([
+        { transform: `translate(${dx}px, ${dy}px) scale(${s * 0.7}) rotate(-7deg)`, opacity: 0.4 },
+        { transform: `translate(${dx * 0.35}px, ${Math.min(dy * 0.4, 0) - 90}px) scale(${(s + 1) / 2}) rotate(3deg)`, opacity: 1, offset: 0.55 },
+        { transform: 'none', opacity: 1 },
+      ], { duration: 950, easing: 'cubic-bezier(0.22, 1, 0.36, 1)', fill: 'backwards' })
+        .finished.then(land, land);
+    }, delay);
+  }
+
+  function closeProjectModal() {
+    if (!backdrop.classList.contains('open')) return;
+    const done = () => {
+      backdrop.classList.remove('open');
+      paper.classList.remove('is-landed');
+      if (launchedFrom) launchedFrom.classList.remove('is-launching');
+      launchedFrom = null;
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+    };
+    if (reduceMotion.matches) return done();
+    // the sheet drops away before the backdrop fades
+    paper.animate([
+      { transform: 'none', opacity: 1 },
+      { transform: 'translateY(38vh) rotate(5deg) scale(0.9)', opacity: 0 },
+    ], { duration: 420, easing: 'cubic-bezier(0.55, 0, 0.75, 0.2)', fill: 'forwards' })
+      .finished.then(() => { done(); paper.getAnimations().forEach(x => x.cancel()); }, done);
+  }
+
+  document.getElementById('projectsGrid').addEventListener('click', e => {
+    // the whole folder opens the case study, not just the button
+    const folder = e.target.closest('.folder');
+    if (folder) openProjectModal(folder.dataset.id, folder);
+  });
+
+  document.getElementById('projectModalClose').addEventListener('click', closeProjectModal);
+  document.getElementById('projectModalBackdrop').addEventListener('click', e => {
+    // click on the dimmed area around the sheet
+    if (e.target === backdrop || e.target === paperScroll) closeProjectModal();
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeProjectModal();
+  });
+</script>
+
+<!-- WORK -->
+<section id="work" class="work-section">
+
+  <div class="work-header">
+    <p class="work-eyebrow">Selected projects</p>
+    <h2 class="work-title tfx">My <span class="tfx-dash">Videos</span></h2>
+  </div>
+
+  <div class="filter-bar" id="filterBar">
+    <button class="filter-pill active" data-filter="all">All</button>
+    <button class="filter-pill" data-filter="short video">Short video</button>
+    <button class="filter-pill" data-filter="music video">Music video</button>
+    <button class="filter-pill" data-filter="event recap">Event recap</button>
+    <button class="filter-pill" data-filter="sports highlights">Sports highlights</button>
+    <button class="filter-pill" data-filter="brand film">Brand film</button>
+    <button class="filter-pill" data-filter="viral video">Viral video</button>
+  </div>
+
+  <div class="carousel-wrap">
+    <div class="carousel-track" id="workTrack"></div>
+    <p class="work-empty" id="workEmpty">No projects in this category yet.</p>
+  </div>
+
+  <div class="carousel-controls">
+    <button class="arrow-btn" id="prevBtn" aria-label="Previous project">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.5"
+              stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <div class="dot-row" id="dotRow"></div>
+    <button class="arrow-btn" id="nextBtn" aria-label="Next project">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.5"
+              stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+
+</section>
+
+<!-- PROJECT MODAL -->
+<div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" data-lenis-prevent>
+  <div class="w-modal">
+    <button class="modal-close" id="modalClose" aria-label="Close project">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
+        <path d="M1 1l11 11M12 1L1 12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+    </button>
+    <div class="modal-thumb" id="modalThumb">
+      <div class="modal-thumb-icon">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+          <polygon points="7,5 14,9 7,13" fill="rgb(249 249 249 / 0.5)"/>
+        </svg>
+      </div>
+      <span class="modal-thumb-label">Video embed</span>
+    </div>
+    <div class="modal-body">
+      <div class="modal-meta">
+        <span id="mBrand" class="modal-brand"></span>
+        <span id="mBadge" class="modal-cat-badge"></span>
+      </div>
+      <h2 id="mTitle" class="modal-title"></h2>
+      <p  id="mIntro" class="modal-intro"></p>
+      <div id="mStats" class="modal-stats"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ── Shared nav + about observer ── */
+  const nav = document.getElementById('nav');
+  // stay transparent over the dark sky scene; go solid once it has scrolled away
+  const skyOuter = document.getElementById('skyOuter');
+  const syncNav = () => {
+    nav.classList.toggle('is-solid', skyOuter.getBoundingClientRect().bottom <= nav.offsetHeight);
+  };
+  window.addEventListener('scroll', syncNav, { passive: true });
+  window.addEventListener('resize', syncNav);
+  syncNav();
+
+  /* Who Am I: pinned section, figure walks left → right and wipes the copy in */
+  (() => {
+    const about = document.getElementById('about');
+    const pin   = about.querySelector('.about-pin');
+    const copy  = about.querySelector('.about-copy');
+    const photo = about.querySelector('.about-photo');
+    const mq    = matchMedia('(min-width: 769px) and (prefers-reduced-motion: no-preference)');
+    const ease  = t => 1 - Math.pow(1 - t, 3);
+
+    function update() {
+      if (!mq.matches) {
+        photo.style.removeProperty('--photo-x');
+        copy.style.removeProperty('--reveal');
+        return;
+      }
+      const run = about.offsetHeight - innerHeight;
+      // hold briefly at the start and end so the pin doesn't feel rushed
+      const raw = Math.min(Math.max(-about.getBoundingClientRect().top / run, 0), 1);
+      const p = ease(Math.min(Math.max((raw - 0.08) / 0.8, 0), 1));
+
+      // start half off the left edge (copy fully hidden)
+      const from = copy.offsetLeft - photo.offsetLeft - photo.offsetWidth * 0.5;
+      // stop in the middle: just past the copy column, leaving the name visible on the right
+      const to   = copy.offsetLeft + copy.offsetWidth + 24 - photo.offsetLeft;
+      const x = from + p * (to - from);
+      photo.style.setProperty('--photo-x', x + 'px');
+      // copy is visible up to the figure's centre line
+      const edge = photo.offsetLeft + x + photo.offsetWidth * 0.5 - copy.offsetLeft;
+      copy.style.setProperty('--reveal', Math.max(edge, 0) + 'px');
+    }
+
+    addEventListener('scroll', update, { passive: true });
+    addEventListener('resize', update);
+    mq.addEventListener('change', update);
+    update();
+  })();
+
+  const services = document.getElementById('services');
+  const servicesObs = new IntersectionObserver(([e]) => {
+    if (e.isIntersecting) { services.classList.add('is-visible'); servicesObs.disconnect(); }
+  }, { threshold: 0.12 });
+  servicesObs.observe(services);
+
+  // service folders: click toggles open (paper with the description) / closed
+  services.querySelectorAll('.sfolder').forEach(f => {
+    f.addEventListener('click', () => {
+      const open = f.classList.toggle('is-open');
+      f.setAttribute('aria-expanded', open);
+    });
+  });
+
+  /* ── Work section data ── */
+  const projects = [
+    {
+      id: 13, category: 'short video',
+      brand: 'Junsport',
+      title: 'Junsport Summer Camp 2026: Viral Campaign',
+      intro: 'A scripted viral video built around Junsport\'s key campaign message for Summer Camp 2026: "Bền bỉ thành thói quen, tự tin thành bản lĩnh", meaning: Consistency builds habit, confidence builds character. Concept, script, direction, filming, and editing by me.',
+      stats: [{ v: '700K', l: 'Views' }, { v: '900', l: 'Interactions' }, { v: '1.9K', l: 'Link Clicks' }],
+      duration: '',
+      color: '#D9C3AB', bg: 'rgb(217 195 171 / 0.15)', thumbBg: '#111111',
+      ratio: '9:16',
+      ytId: 'Fq-CuFJiUXE',
+      embedUrl: 'https://www.youtube.com/embed/Fq-CuFJiUXE',
+      fbUrl: 'https://www.facebook.com/share/r/1Kyw9r9eie/?mibextid=wwXIfr',
+    },
+    {
+      id: 14, category: 'event recap',
+      brand: '',
+      title: 'MY GRADUATION RECAP',
+      intro: 'A personal recap capturing the moments and energy of graduation day.',
+      stats: [
+        { v: 'DOP · Editor', l: 'Credits' }
+      ],
+      duration: '', ratio: '16:9',
+      color: '#F16001', bg: 'rgb(241 96 1 / 0.15)', thumbBg: '#1A0A06',
+      ytId: 'k4qB1ddpnwk',
+      embedUrl: 'https://www.youtube.com/embed/k4qB1ddpnwk',
+      ytUrl: 'https://www.youtube.com/watch?v=k4qB1ddpnwk',
+    },
+    {
+      id: 15, category: 'short video',
+      brand: 'Junsport',
+      title: 'JUNSPORT SUMMER KIT',
+      intro: 'A fast-paced, high-energy showcase of JUNSPORT\'s Summer Kit lineup, built for website store display. Quick-cut editing and dynamic product placement keep the pacing sharp, designed to grab attention and drive online sales.',
+      stats: [
+        { v: '54.1K', l: 'Views' },
+        { v: '158', l: 'Reactions' },
+        { v: 'DOP · Editor', l: 'Credits' }
+      ],
+      duration: '', ratio: '9:16',
+      color: '#E85002', bg: 'rgb(232 80 2 / 0.15)', thumbBg: '#1A0A06',
+      ytId: 'kMoTdtedG2A',
+      embedUrl: 'https://www.youtube.com/embed/kMoTdtedG2A',
+      ytUrl: 'https://www.youtube.com/watch?v=kMoTdtedG2A',
+    },
+    {
+      id: 7, category: 'brand film',
+      brand: 'Junsport',
+      title: 'JET 4 Electrified by GreenSM',
+      intro: 'Full creative ownership: scripted, shot, and edited to reframe a local basketball tournament as a premium sporting event. No brief. No budget. Just vision.',
+      stats: [
+        { v: 'Credits', l: 'Script · DOP · Editor' },
+        { v: 'Role', l: 'Self-initiated' },
+        { v: 'Project', l: 'JET 4' }
+      ],
+      duration: '1:15', ratio: '16:9',
+      color: '#D9C3AB', bg: 'rgb(217 195 171 / 0.15)', thumbBg: '#17120C',
+      ytId: '4b_rRYuQLQU',
+      embedUrl: 'https://www.youtube.com/embed/4b_rRYuQLQU',
+      fullDesc: 'The Junsport Elite Tournament 4 didn\'t have a media brief. I watched the previous seasons, saw a gap between the quality of the competition and how it was being presented, and proposed this film myself.\n\nI wrote the script to build tension and narrative arc across the tournament, not just highlight the best plays. Shot the entire event as DOP, then edited with pacing and sound design that borrowed more from cinematic sports docs than standard recap videos.\n\nNo paid distribution. 3.5K organic views. Built entirely to show what the tournament could look like — and what I\'m capable of delivering without being asked.',
+      ytUrl: 'https://www.youtube.com/watch?v=4b_rRYuQLQU',
+    },
+    {
+      id: 11, category: 'music video',
+      brand: 'Academy of Journalism & Communication',
+      title: 'Có Không Giữ Mất Đừng Tìm × GENE: MV Remake',
+      intro: 'A scripted music video reimagining a viral mashup through the lens of Vietnamese water puppetry, blending traditional folk art with modern storytelling to bridge cultural heritage and youth audiences.',
+      stats: [
+        { v: '8.8K',              l: 'Views'   },
+        { v: 'DOP · Color Grading', l: 'Credits' },
+        { v: 'AJC',               l: 'Project'  }
+      ],
+      duration: '', ratio: '16:9',
+      color: '#D9C3AB', bg: 'rgb(217 195 171 / 0.15)', thumbBg: '#111111',
+      ytId: 'AqZx-dEEyuI',
+      embedUrl: 'https://www.youtube.com/embed/AqZx-dEEyuI',
+      ytUrl: 'https://www.youtube.com/watch?v=AqZx-dEEyuI',
+    },
+    {
+      id: 8, category: 'short video',
+      brand: 'Junsport',
+      title: 'Junsport Unlimited: course introduction',
+      intro: 'A course introduction built around one insight: serious players need flexibility. Positioned Junsport Unlimited as the go-to solution for students who want to compete at a higher level, train anywhere, anytime.',
+      stats: [{ v: '460K', l: 'Views' }, { v: '274.5K', l: 'Reach' }, { v: '621', l: 'Interactions' }],
+      duration: '1:01',
+      color: '#D9C3AB', bg: 'rgb(217 195 171 / 0.15)', thumbBg: '#111111',
+      ratio: '9:16',
+      ytId: 'vqF4FDc7S1A',
+      embedUrl: 'https://www.youtube.com/embed/vqF4FDc7S1A',
+      fbUrl: 'https://www.facebook.com/reel/2409305806069802?fs=e&mibextid=wwXIfr',
+    },
+    {
+      id: 9, category: 'short video',
+      brand: 'Junsport',
+      title: 'Junsport Back to School Q&A #1',
+      intro: 'A parent-first content piece answering the real question behind every enrollment decision. Framed basketball not as a sport but as a life skill: time management, teamwork, and structure for kids heading back to school.',
+      stats: [{ v: '623K', l: 'Views' }, { v: '1.2K', l: 'Interactions' }, { v: '3.4K', l: 'Link clicks' }],
+      duration: '0:53',
+      color: '#D9C3AB', bg: 'rgb(217 195 171 / 0.15)', thumbBg: '#111111',
+      ratio: '9:16',
+      ytId: 'WRr39qK9NoY',
+      embedUrl: 'https://www.youtube.com/embed/WRr39qK9NoY',
+      fbUrl: 'https://www.facebook.com/share/r/1Gr2dboaqP/',
+    },
+    {
+      id: 10, category: 'short video',
+      brand: 'Junsport',
+      title: 'Junsport Back to School Q&A #3',
+      intro: 'Tackled the #1 parent concern head-on: will basketball hurt my child\'s grades? Reframed the question, showing how structured training builds the exact habits that make kids better students.',
+      stats: [{ v: '708.5K', l: 'Views' }, { v: '1.7K', l: 'Interactions' }, { v: '3.3K', l: 'Link clicks' }],
+      duration: '0:36',
+      color: '#D9C3AB', bg: 'rgb(217 195 171 / 0.15)', thumbBg: '#111111',
+      ratio: '9:16',
+      ytId: 'u3BiNDDivDY',
+      embedUrl: 'https://www.youtube.com/embed/u3BiNDDivDY',
+      fbUrl: 'https://www.facebook.com/share/r/1B2pMyoWMA/',
+    },
+    {
+      id: 12, category: 'event recap',
+      brand: 'Junsport',
+      title: 'Junsport Summer Camp 2026: Boot Camp Recap',
+      intro: 'A showcase of Boot Camp activities at Junsport Summer Camp 2026, giving parents and students a real look at what happens on the court. Recreated the fun, energetic atmosphere through fast cuts and zoom-ins to build tension and capture the energy of the session.',
+      stats: [{ v: '225K', l: 'Views' }, { v: '121.7K', l: 'Reach' }, { v: '488', l: 'Link Clicks' }],
+      duration: '',
+      color: '#E85002', bg: 'rgb(232 80 2 / 0.15)', thumbBg: '#1A0A06',
+      ratio: '16:9',
+      ytId: 'Va-jQhMFU18',
+      embedUrl: 'https://www.youtube.com/embed/Va-jQhMFU18',
+      fbUrl: 'https://www.facebook.com/share/v/18fWbhHFno/',
+    },
+  ];
+
+  let activeFilter = 'all';
+  let currentIdx   = 0;
+  let workRendered = false;
+
+  function visibleProjects() {
+    return activeFilter === 'all' ? projects : projects.filter(p => p.category === activeFilter);
+  }
+
+  function cardHTML(p) {
+    const stats = p.stats.map(s =>
+      `<div class="w-stat"><span class="w-stat-value">${s.v}</span><span class="w-stat-label">${s.l}</span></div>`
+    ).join('');
+    return `
+      <article class="work-card" tabindex="0" role="button"
+               aria-label="Open project: ${p.title}" data-id="${p.id}" data-ratio="${p.ratio}">
+        <div class="card-thumb" style="background:${p.thumbBg}${p.thumbImg ? `;background-image:linear-gradient(to bottom,oklch(0% 0 0/0.35) 0%,oklch(0% 0 0/0.55) 100%),url('${p.thumbImg}');background-size:cover;background-position:center` : ''}">
+          <div class="play-ring-wrap" aria-hidden="true">
+            <svg viewBox="0 0 60 60" fill="none">
+              <circle cx="30" cy="30" r="26" stroke="rgb(249 249 249 / 0.55)" stroke-width="1.4"/>
+              <polygon points="26,21 40,30 26,39" fill="rgb(249 249 249 / 0.88)"/>
+            </svg>
+          </div>
+          <span class="card-badge" style="color:${p.color};background:${p.bg}">${p.category}</span>
+          <span class="card-duration">${p.duration}</span>
+        </div>
+        <div class="card-body">
+          <p class="card-brand">${p.brand}</p>
+          <h3 class="card-title">${p.title}</h3>
+          <p class="card-intro">${p.intro}</p>
+          <div class="card-stats">${stats}</div>
+        </div>
+      </article>`;
+  }
+
+  function renderWork(animate) {
+    const list  = visibleProjects();
+    const track = document.getElementById('workTrack');
+    const empty = document.getElementById('workEmpty');
+
+    if (!list.length) {
+      track.innerHTML = '';
+      empty.style.display = 'block';
+      buildDots(0); return;
+    }
+
+    empty.style.display = 'none';
+    track.innerHTML = list.map(cardHTML).join('');
+
+    track.querySelectorAll('.work-card').forEach((card, i) => {
+      card.style.transitionDelay = animate ? `${i * 80}ms` : '0ms';
+      requestAnimationFrame(() => requestAnimationFrame(() => card.classList.add('in')));
+      card.addEventListener('click', () => openModal(+card.dataset.id));
+      card.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(+card.dataset.id); }
+      });
+    });
+
+    currentIdx = 0;
+    track.scrollLeft = 0;
+    buildDots(list.length);
+    syncControls();
+    loadYtThumbs(list);
+  }
+
+  function loadYtThumbs(list) {
+    list.forEach(p => {
+      if (!p.ytId) return;
+      const card  = document.querySelector(`.work-card[data-id="${p.id}"]`);
+      if (!card) return;
+      const thumb = card.querySelector('.card-thumb');
+      const apply = url => {
+        thumb.style.backgroundImage =
+          `linear-gradient(to bottom,oklch(0% 0 0/0.2) 0%,oklch(0% 0 0/0.45) 100%),url('${url}')`;
+        thumb.style.backgroundSize     = 'cover';
+        thumb.style.backgroundPosition = 'center top';
+      };
+      const max = `https://img.youtube.com/vi/${p.ytId}/maxresdefault.jpg`;
+      const hq  = `https://img.youtube.com/vi/${p.ytId}/hqdefault.jpg`;
+      const img = new Image();
+      img.onload  = () => apply(max);
+      img.onerror = () => { const fb = new Image(); fb.onload = () => apply(hq); fb.src = hq; };
+      img.src = max;
+    });
+  }
+
+  function buildDots(n) {
+    const row = document.getElementById('dotRow');
+    row.innerHTML = '';
+    for (let i = 0; i < n; i++) {
+      const btn = document.createElement('button');
+      btn.className = 'w-dot' + (i === 0 ? ' active' : '');
+      btn.setAttribute('aria-label', `Go to card ${i + 1}`);
+      btn.addEventListener('click', () => goTo(i));
+      row.appendChild(btn);
+    }
+  }
+
+  function syncControls() {
+    const n = visibleProjects().length;
+    document.getElementById('prevBtn').disabled = currentIdx <= 0;
+    document.getElementById('nextBtn').disabled = currentIdx >= n - 1;
+    document.querySelectorAll('.w-dot').forEach((d, i) => d.classList.toggle('active', i === currentIdx));
+  }
+
+  function cardStride() {
+    const c = document.querySelector('.work-card');
+    return c ? c.getBoundingClientRect().width + 22 : 338;
+  }
+
+  function goTo(idx) {
+    const n = visibleProjects().length;
+    currentIdx = Math.max(0, Math.min(idx, n - 1));
+    document.getElementById('workTrack').scrollTo({ left: currentIdx * cardStride(), behavior: 'smooth' });
+    syncControls();
+  }
+
+  document.getElementById('prevBtn').addEventListener('click', () => goTo(currentIdx - 1));
+  document.getElementById('nextBtn').addEventListener('click', () => goTo(currentIdx + 1));
+
+  document.getElementById('workTrack').addEventListener('scroll', () => {
+    const s = cardStride();
+    if (!s) return;
+    const idx = Math.round(document.getElementById('workTrack').scrollLeft / s);
+    if (idx !== currentIdx) { currentIdx = idx; syncControls(); }
+  }, { passive: true });
+
+  document.getElementById('filterBar').addEventListener('click', e => {
+    const pill = e.target.closest('.filter-pill');
+    if (!pill || pill.dataset.filter === activeFilter) return;
+    document.querySelectorAll('.work-card').forEach(c => {
+      c.style.transition = 'opacity 150ms ease, transform 150ms ease';
+      c.style.opacity = '0';
+      c.style.transform = 'translateY(4px) scale(0.97)';
+    });
+    document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+    activeFilter = pill.dataset.filter;
+    setTimeout(() => renderWork(true), 165);
+  });
+
+  /* Work section scroll-reveal — trigger card stagger + title animation */
+  const workSection = document.getElementById('work');
+  const workObs = new IntersectionObserver(([e]) => {
+    if (e.isIntersecting) {
+      workSection.classList.add('is-visible');
+      if (!workRendered) { workRendered = true; renderWork(true); }
+      workObs.disconnect();
+    }
+  }, { threshold: 0.06 });
+  workObs.observe(workSection);
+
+  /* ── Modal ── */
+  function openModal(id) {
+    const p = projects.find(x => x.id === id);
+    if (!p) return;
+    document.getElementById('mBrand').textContent = p.brand;
+    document.getElementById('mTitle').textContent = p.title;
+    const desc = p.fullDesc || p.intro;
+    document.getElementById('mIntro').innerHTML = desc.replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
+
+    const isVert = p.ratio === '9:16';
+    const modal  = document.querySelector('.w-modal');
+    modal.classList.remove('w-modal--vert', 'w-modal--horiz');
+    modal.classList.add(isVert ? 'w-modal--vert' : 'w-modal--horiz');
+
+    const thumb = document.getElementById('modalThumb');
+    thumb.innerHTML = '';
+    thumb.style.cssText = '';
+    thumb.classList.remove('has-video');
+    if (p.embedUrl) {
+      thumb.classList.add('has-video');
+      const paddingBottom = isVert ? '177.78%' : '56.25%';
+      const wrapper = document.createElement('div');
+      wrapper.style.cssText = `position:relative;width:100%;padding-bottom:${paddingBottom};overflow:hidden;`;
+      const iframe = document.createElement('iframe');
+      iframe.src = p.embedUrl;
+      iframe.setAttribute('frameborder', '0');
+      iframe.setAttribute('allowfullscreen', '');
+      iframe.setAttribute('allow', 'autoplay; encrypted-media; fullscreen; picture-in-picture');
+      iframe.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;border:0;';
+      wrapper.appendChild(iframe);
+      thumb.appendChild(wrapper);
+    } else {
+      thumb.style.background = p.thumbBg;
+      if (p.thumbImg) {
+        thumb.style.backgroundImage = `linear-gradient(to bottom,oklch(0% 0 0/0.35),oklch(0% 0 0/0.55)),url('${p.thumbImg}')`;
+        thumb.style.backgroundSize = 'cover';
+        thumb.style.backgroundPosition = 'center';
+      }
+      thumb.innerHTML = `
+        <div class="modal-thumb-icon">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+            <polygon points="7,5 14,9 7,13" fill="rgb(249 249 249 / 0.5)"/>
+          </svg>
+        </div>
+        <span class="modal-thumb-label">Video embed</span>`;
+    }
+
+    const badge = document.getElementById('mBadge');
+    badge.textContent = p.category;
+    badge.style.color = p.color;
+    badge.style.background = p.bg;
+
+    const statsEl = document.getElementById('mStats');
+    statsEl.innerHTML = p.stats.map(s =>
+      `<div class="modal-stat"><span class="modal-stat-value">${s.v}</span><span class="modal-stat-label">${s.l}</span></div>`
+    ).join('');
+    const watchUrl   = p.ytUrl || p.fbUrl;
+    const watchLabel = p.ytUrl ? 'Watch on YouTube ↗' : 'Watch on Facebook ↗';
+    if (watchUrl) {
+      statsEl.insertAdjacentHTML('afterend',
+        `<a href="${watchUrl}" target="_blank" rel="noopener noreferrer" class="modal-yt-btn" id="modalYtBtn">${watchLabel}</a>`
+      );
+    }
+
+    document.getElementById('modalBackdrop').classList.add('open');
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+    document.getElementById('modalClose').focus();
+  }
+
+  function closeModal() {
+    const iframe = document.querySelector('#modalThumb iframe');
+    if (iframe) { iframe.src = ''; }
+    document.getElementById('modalThumb').classList.remove('has-video');
+    document.querySelector('.w-modal').classList.remove('w-modal--vert', 'w-modal--horiz');
+    const ytBtn = document.getElementById('modalYtBtn');
+    if (ytBtn) ytBtn.remove();
+    document.getElementById('modalBackdrop').classList.remove('open');
+    document.documentElement.style.overflow = '';
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('modalClose').addEventListener('click', closeModal);
+  document.getElementById('modalBackdrop').addEventListener('click', e => {
+    if (e.target.id === 'modalBackdrop') closeModal();
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeModal();
+    if (document.getElementById('modalBackdrop').classList.contains('open')) return;
+    if (e.key === 'ArrowLeft')  goTo(currentIdx - 1);
+    if (e.key === 'ArrowRight') goTo(currentIdx + 1);
+  });
+
+</script>
+
+<!-- CONTACT SECTION -->
+<div class="stack-outer">
+<div class="stack-panel" style="z-index:6; background:var(--bg);">
+<div class="stack-scroll" data-lenis-prevent>
+<section id="contact" class="contact-section">
+
+  <!-- Left — name + role -->
+  <div class="ct-left">
+    <div>
+      <p class="ct-name">Hoang Hai</p>
+      <p class="ct-role">Creative Strategist</p>
+    </div>
+  </div>
+
+  <!-- Right — heading + contact -->
+  <div class="ct-right">
+    <div class="ct-right-inner">
+      <h2 class="ct-heading tfx">Let's get to know <span class="tfx-hl">each other</span></h2>
+
+      <div class="ct-buttons-stack">
+        <button class="ct-email-pill" id="ctEmailPill"
+                aria-label="Copy email address hhai10.fm@gmail.com">
+          <span>hhai10.fm@gmail.com</span>
+          <span class="ct-copy-icon" aria-hidden="true">
+            <svg id="ctIconCopy" width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <rect x="5" y="1" width="8" height="9" rx="1" stroke="currentColor" stroke-width="1.3"/>
+              <path d="M1 5h3M1 5v7a1 1 0 0 0 1 1h6v-3" stroke="currentColor" stroke-width="1.3"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <svg id="ctIconCheck" width="14" height="14" viewBox="0 0 14 14" fill="none"
+                 style="display:none;">
+              <path d="M2.5 7l3 3 6-6" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </button>
+
+        <div class="ct-tags">
+          <button class="ct-tag" id="ctPhoneBtn" aria-label="Copy phone number +84 347 644 517"
+                  style="display:inline-flex;align-items:center;gap:10px;cursor:pointer;font-family:inherit;">
+            <span>+84 347 644 517</span>
+            <span id="ctPhoneCopyIcon" aria-hidden="true" style="flex-shrink:0;display:flex;align-items:center;color:rgba(255,255,255,0.7);">
+              <svg id="ctPhoneIconCopy" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <rect x="5" y="1" width="8" height="9" rx="1" stroke="currentColor" stroke-width="1.3"/>
+                <path d="M1 5h3M1 5v7a1 1 0 0 0 1 1h6v-3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <svg id="ctPhoneIconCheck" width="14" height="14" viewBox="0 0 14 14" fill="none" style="display:none;">
+                <path d="M2.5 7l3 3 6-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          </button>
+          <a class="ct-tag" href="https://www.linkedin.com/in/h%E1%BA%A3i-ho%C3%A0ng-823042310/"
+             target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
+          <a class="ct-tag" href="https://www.instagram.com/haibum.sp"
+             target="_blank" rel="noopener noreferrer">Instagram ↗</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+</div>
+</div>
+</div>
+
+<script>
+  /* ── Contact reveal ── */
+  const contactSection = document.getElementById('contact');
+  const contactObs = new IntersectionObserver(([e]) => {
+    if (e.isIntersecting) { contactSection.classList.add('is-visible'); contactObs.disconnect(); }
+  }, { threshold: 0.08 });
+  contactObs.observe(contactSection);
+
+  /* ── Email copy ── */
+  const ctPill      = document.getElementById('ctEmailPill');
+  const ctIconCopy  = document.getElementById('ctIconCopy');
+  const ctIconCheck = document.getElementById('ctIconCheck');
+  let   ctCopyTimer = null;
+
+  ctPill.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText('hhai10.fm@gmail.com');
+    } catch (_) {
+      const ta = document.createElement('textarea');
+      ta.value = 'hhai10.fm@gmail.com';
+      ta.style.cssText = 'position:fixed;opacity:0;';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    }
+    ctIconCopy.style.display  = 'none';
+    ctIconCheck.style.display = '';
+    ctPill.classList.add('copied');
+    clearTimeout(ctCopyTimer);
+    ctCopyTimer = setTimeout(() => {
+      ctIconCopy.style.display  = '';
+      ctIconCheck.style.display = 'none';
+      ctPill.classList.remove('copied');
+    }, 2000);
+  });
+
+  /* ── Phone copy ── */
+  const ctPhoneBtn       = document.getElementById('ctPhoneBtn');
+  const ctPhoneIconCopy  = document.getElementById('ctPhoneIconCopy');
+  const ctPhoneIconCheck = document.getElementById('ctPhoneIconCheck');
+  let   ctPhoneTimer     = null;
+
+  ctPhoneBtn.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText('+84 347 644 517');
+    } catch (_) {
+      const ta = document.createElement('textarea');
+      ta.value = '+84 347 644 517';
+      ta.style.cssText = 'position:fixed;opacity:0;';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    }
+    ctPhoneIconCopy.style.display  = 'none';
+    ctPhoneIconCheck.style.display = '';
+    clearTimeout(ctPhoneTimer);
+    ctPhoneTimer = setTimeout(() => {
+      ctPhoneIconCopy.style.display  = '';
+      ctPhoneIconCheck.style.display = 'none';
+    }, 2000);
+  });
+</script>
+
+<!-- Smooth scroll (Lenis): eases wheel/trackpad scrolling and anchor jumps -->
+<script src="https://cdn.jsdelivr.net/npm/lenis@1/dist/lenis.min.js"></script>
+<script>
+  const lenis = new Lenis({
+    duration: 1.1,
+    easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    smoothWheel: true,
+  });
+  // exposed so modal open/close handlers (defined earlier in the page) can
+  // pause/resume it — without this, Lenis keeps driving the document's
+  // scroll position even while a modal has body.style.overflow set to
+  // hidden, which is what let the background scroll through a modal on touch.
+  window.lenis = lenis;
+  // Lenis jumps (anchor links, scrollTo) don't always emit a native scroll
+  // event in time, so re-sync the nav from Lenis' own scroll signal too
+  lenis.on('scroll', syncNav);
+
+  function raf(time) {
+    lenis.raf(time);
+    requestAnimationFrame(raf);
+  }
+  requestAnimationFrame(raf);
+
+  // Intercept in-page anchor links so they ease through Lenis instead of
+  // jumping instantly (native scroll-behavior:smooth was removed above).
+  document.addEventListener('click', e => {
+    const link = e.target.closest('a[href^="#"]');
+    if (!link) return;
+    const id = link.getAttribute('href');
+    if (id.length < 2) return;
+    const target = document.querySelector(id);
+    if (!target) return;
+    e.preventDefault();
+    lenis.scrollTo(target, { offset: -72 });
+  });
+</script>
+
+
+<script>
+  /* Typography FX: builds the overlays, splits headings into words, and
+     plays everything when the heading enters the viewport (see CSS). */
+  (function () {
+    const CURSOR = '<svg class="tfx-cursor" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 2 L4 19 L8.5 14.8 L11.6 21.6 L14.3 20.4 L11.3 13.7 L17.5 13.4 Z" fill="#0A0A0A" stroke="#F9F9F9" stroke-width="1.4" stroke-linejoin="round"/></svg>';
+    const PEN = '<span class="tfx-pen" aria-hidden="true"><svg><line class="pen-handle"/><line class="pen-handle"/><path class="pen-path" pathLength="1"/></svg>'
+      + '<b style="--x:2%;--y:70%;--hi:0"></b><u style="--x:30%;--y:10%;--hi:1"></u>'
+      + '<u style="--x:70%;--y:100%;--hi:2"></u><b style="--x:98%;--y:40%;--hi:3"></b></span>';
+    const SKIP = '.tfx-box, .tfx-pen, .tfx-cursor';
+
+    // pen curve is drawn in real pixels so the stroke never gets stretched
+    function drawPen(pen) {
+      const w = pen.clientWidth, h = pen.clientHeight;
+      const P = [[0.02, 0.7], [0.3, 0.1], [0.7, 1], [0.98, 0.4]].map(([x, y]) => [x * w, y * h]);
+      const svg = pen.querySelector('svg');
+      svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+      svg.querySelector('.pen-path').setAttribute('d', `M${P[0][0]} ${P[0][1]} C ${P[1][0]} ${P[1][1]}, ${P[2][0]} ${P[2][1]}, ${P[3][0]} ${P[3][1]}`);
+      const [l1, l2] = svg.querySelectorAll('.pen-handle');
+      [[l1, P[0], P[1]], [l2, P[3], P[2]]].forEach(([l, a, b]) => {
+        l.setAttribute('x1', a[0]); l.setAttribute('y1', a[1]);
+        l.setAttribute('x2', b[0]); l.setAttribute('y2', b[1]);
+      });
+    }
+
+    function splitWords(root, counter) {
+      [...root.childNodes].forEach(node => {
+        if (node.nodeType === 3) {
+          const frag = document.createDocumentFragment();
+          node.textContent.split(/(\s+)/).forEach(part => {
+            if (!part) return;
+            if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(part)); return; }
+            const w = document.createElement('span');
+            w.className = 'tfx-word';
+            w.style.setProperty('--wi', counter.i++);
+            w.textContent = part;
+            frag.appendChild(w);
+          });
+          node.replaceWith(frag);
+        } else if (node.nodeType === 1 && !node.matches(SKIP)) {
+          splitWords(node, counter);
+        }
+      });
+    }
+
+    function enhance(h) {
+      splitWords(h, { i: 0 });
+      h.querySelectorAll('.tfx-sel').forEach(el => {
+        el.insertAdjacentHTML('beforeend', '<span class="tfx-box" aria-hidden="true">' + '<i></i>'.repeat(8) + '</span>');
+        if (h.classList.contains('tfx-drag')) el.insertAdjacentHTML('beforeend', CURSOR);
+      });
+      h.querySelectorAll('.tfx-bez').forEach(el => el.insertAdjacentHTML('beforeend', PEN));
+      // each effect waits for its own last word to land
+      h.querySelectorAll('.tfx-sel, .tfx-hl, .tfx-dash, .tfx-bez').forEach(el => {
+        const words = el.querySelectorAll('.tfx-word');
+        const last = +words[words.length - 1].style.getPropertyValue('--wi');
+        el.style.setProperty('--od', (last * 70 + 520) + 'ms');
+      });
+      h.querySelectorAll('.tfx-pen').forEach(drawPen);
+    }
+
+    const heads = document.querySelectorAll('.tfx');
+    heads.forEach(enhance);
+
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        e.target.classList.add('tfx-on');
+        io.unobserve(e.target);
+      });
+    }, { threshold: 0.6 });
+    heads.forEach(h => {
+      if (h.hasAttribute('data-tfx-auto')) setTimeout(() => h.classList.add('tfx-on'), 350);
+      else io.observe(h);
+    });
+
+    // for headings rendered later (the case-study paper)
+    window.tfx = {
+      mount(root) {
+        root.querySelectorAll('.tfx').forEach(h => { enhance(h); io.observe(h); });
+      },
+    };
+
+    addEventListener('resize', () => document.querySelectorAll('.tfx-pen').forEach(drawPen));
+    document.fonts && document.fonts.ready.then(() => document.querySelectorAll('.tfx-pen').forEach(drawPen));
+  })();
+</script>
+<script>
+  // feed page scroll progress to the background field
+  (function () {
+    const field = document.querySelector('.bg-field');
+    let raf = 0;
+    const set = () => {
+      raf = 0;
+      const max = document.documentElement.scrollHeight - innerHeight;
+      field.style.setProperty('--sp', max > 0 ? (scrollY / max).toFixed(4) : 0);
+    };
+    addEventListener('scroll', () => { if (!raf) raf = requestAnimationFrame(set); }, { passive: true });
+    addEventListener('resize', set);
+    set();
+  })();
+</script>
+</body>
+</html>

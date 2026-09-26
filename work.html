@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Videos — Hoang Hai</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── DESIGN TOKENS (mirrored from index.html) ─── */
+    :root {
+      --ease-out:   cubic-bezier(0.23, 1, 0.32, 1);
+      --ease-inout: cubic-bezier(0.77, 0, 0.175, 1);
+      --ink:        oklch(95%  0.006 78);
+      --muted:      oklch(60%  0.007 82);
+      --amber:      oklch(72%  0.12  66);
+      --bg:         oklch(9%   0.018 205);
+      --surface:    oklch(14%  0.016 205);
+      --surface-2:  oklch(19%  0.013 205);
+      --border:     oklch(24%  0.012 205);
+      --border-sub: oklch(17%  0.013 205);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* ─── NAV ─── */
+    .nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 32px 56px;
+      background: linear-gradient(to bottom, oklch(9% 0.018 205 / 0.96) 0%, transparent 100%);
+    }
+    .nav-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: 0.08em;
+      color: var(--ink);
+      text-decoration: none;
+    }
+    .nav-links { display: flex; align-items: center; gap: 44px; }
+    .nav-link {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: oklch(84% 0.005 80);
+      text-decoration: none;
+      transition: opacity 280ms var(--ease-out);
+    }
+    .nav-link:hover { opacity: 0.5; }
+    .nav-link.active { color: var(--ink); }
+    .nav-link:focus-visible { outline: 2px solid var(--amber); outline-offset: 4px; border-radius: 2px; }
+
+    /* ─── PAGE HEADER ─── */
+    .page-header {
+      padding: 156px 56px 44px;
+    }
+    .page-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 18px;
+      opacity: 0;
+      animation: slideUp 680ms var(--ease-out) 60ms forwards;
+    }
+    .page-eyebrow::before {
+      content: '';
+      display: block;
+      width: 24px;
+      height: 1px;
+      background: var(--amber);
+      flex-shrink: 0;
+      transform-origin: left;
+      animation: lineIn 500ms var(--ease-out) 340ms both;
+    }
+    @keyframes lineIn {
+      from { transform: scaleX(0); }
+      to   { transform: scaleX(1); }
+    }
+    .page-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(60px, 9vw, 130px);
+      line-height: 0.88;
+      letter-spacing: 0.01em;
+      color: var(--ink);
+      opacity: 0;
+      filter: blur(8px);
+      transform: translateY(28px);
+      animation: titleIn 960ms var(--ease-out) 120ms forwards;
+    }
+    @keyframes titleIn {
+      to { opacity: 1; filter: blur(0); transform: translateY(0); }
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── FILTER BAR ─── */
+    .filter-bar {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border-sub);
+      padding: 14px 56px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    .filter-bar::-webkit-scrollbar { display: none; }
+    .filter-pill {
+      flex-shrink: 0;
+      padding: 8px 18px;
+      border: 1px solid var(--border);
+      border-radius: 30px;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: transparent;
+      cursor: pointer;
+      transition:
+        background    200ms var(--ease-out),
+        border-color  200ms var(--ease-out),
+        color         200ms var(--ease-out),
+        transform     100ms ease-out;
+    }
+    @media (hover: hover) and (pointer: fine) {
+      .filter-pill:hover { color: var(--ink); border-color: oklch(38% 0.010 205); }
+    }
+    .filter-pill:active { transform: scale(0.96); }
+    .filter-pill.active {
+      background: var(--amber);
+      border-color: var(--amber);
+      color: oklch(9% 0.018 205);
+    }
+    .filter-pill:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+
+    /* ─── CAROUSEL ─── */
+    .carousel-wrap {
+      padding: 40px 0 0;
+    }
+    .carousel-track {
+      display: flex;
+      gap: 22px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      padding: 8px 56px 36px;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    .carousel-track::-webkit-scrollbar { display: none; }
+
+    /* ─── WORK CARD ─── */
+    .work-card {
+      flex-shrink: 0;
+      width: 316px;
+      border-radius: 4px;
+      background: var(--surface);
+      border: 1px solid var(--border-sub);
+      overflow: hidden;
+      scroll-snap-align: start;
+      cursor: pointer;
+      opacity: 0;
+      transform: translateY(20px);
+      transition:
+        opacity      400ms var(--ease-out),
+        transform    250ms var(--ease-out),
+        box-shadow   250ms var(--ease-out);
+    }
+    .work-card.in {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    @media (hover: hover) and (pointer: fine) {
+      .work-card:hover {
+        transform: translateY(-4px);
+        box-shadow:
+          0 12px 32px oklch(0% 0 0 / 0.48),
+          0  2px  8px oklch(0% 0 0 / 0.24);
+      }
+    }
+    .work-card:active { transform: scale(0.98) !important; }
+    .work-card:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+
+    /* ── Thumbnail ── */
+    .card-thumb {
+      position: relative;
+      width: 100%;
+      height: 258px;
+      overflow: hidden;
+    }
+    /* Scanline texture */
+    .card-thumb::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        oklch(0% 0 0 / 0.06) 2px,
+        oklch(0% 0 0 / 0.06) 4px
+      );
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Play ring */
+    .play-ring-wrap {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 2;
+      width: 60px; height: 60px;
+    }
+    .play-ring-wrap svg {
+      width: 100%; height: 100%;
+      animation: ringPulse 2.2s ease-in-out infinite;
+    }
+    @keyframes ringPulse {
+      0%, 100% { opacity: 0.55; transform: scale(1); }
+      50%       { opacity: 1;   transform: scale(1.08); }
+    }
+
+    /* Badge */
+    .card-badge {
+      position: absolute;
+      top: 12px; left: 12px;
+      z-index: 3;
+      padding: 4px 10px;
+      border-radius: 30px;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      line-height: 1;
+    }
+
+    /* Duration */
+    .card-duration {
+      position: absolute;
+      bottom: 10px; right: 10px;
+      z-index: 3;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      color: oklch(92% 0.005 78);
+      background: oklch(0% 0 0 / 0.60);
+      padding: 3px 8px;
+      border-radius: 3px;
+    }
+
+    /* ── Card body ── */
+    .card-body {
+      padding: 18px 20px 16px;
+    }
+    .card-brand {
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .card-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 21px;
+      line-height: 1.06;
+      letter-spacing: 0.02em;
+      color: var(--ink);
+      margin-bottom: 10px;
+    }
+    .card-intro {
+      font-size: 12px;
+      line-height: 1.68;
+      color: var(--muted);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+    .card-stats {
+      display: flex;
+      align-items: stretch;
+      border-top: 1px solid var(--border-sub);
+      padding-top: 14px;
+      gap: 0;
+    }
+    .stat {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 0 4px;
+    }
+    .stat + .stat {
+      border-left: 1px solid var(--border-sub);
+    }
+    .stat-value {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 17px;
+      letter-spacing: 0.04em;
+      color: var(--ink);
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 8.5px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    /* ─── EMPTY STATE ─── */
+    .empty-state {
+      display: none;
+      padding: 80px 56px;
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    /* ─── CONTROLS ─── */
+    .carousel-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      padding: 4px 56px 80px;
+    }
+    .arrow-btn {
+      width: 44px; height: 44px;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      background: transparent;
+      color: var(--ink);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition:
+        background   180ms var(--ease-out),
+        border-color 180ms var(--ease-out),
+        transform    100ms ease-out;
+    }
+    @media (hover: hover) and (pointer: fine) {
+      .arrow-btn:hover { background: var(--surface); border-color: oklch(36% 0.010 205); }
+    }
+    .arrow-btn:active { transform: scale(0.92); }
+    .arrow-btn:disabled { opacity: 0.22; cursor: not-allowed; pointer-events: none; }
+    .arrow-btn:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+
+    .dot-row { display: flex; align-items: center; gap: 6px; }
+    .dot {
+      width: 6px; height: 6px;
+      border-radius: 3px;
+      background: var(--border);
+      cursor: pointer;
+      border: none;
+      padding: 0;
+      transition:
+        width      300ms var(--ease-out),
+        background 300ms var(--ease-out);
+    }
+    .dot.active {
+      width: 22px;
+      background: var(--amber);
+    }
+    .dot:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+
+    /* ─── MODAL ─── */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: oklch(0% 0 0 / 0.82);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 200ms var(--ease-out);
+    }
+    .modal-backdrop.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .modal {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      width: 100%;
+      max-width: 700px;
+      max-height: 88vh;
+      overflow-y: auto;
+      transform: scale(0.95);
+      transition: transform 220ms var(--ease-out);
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+    .modal-backdrop.open .modal {
+      transform: scale(1);
+    }
+    .modal-close {
+      position: absolute;
+      top: 14px; right: 14px;
+      z-index: 10;
+      width: 36px; height: 36px;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      background: var(--surface-2);
+      color: var(--ink);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 160ms, transform 100ms ease-out;
+    }
+    @media (hover: hover) and (pointer: fine) {
+      .modal-close:hover { background: oklch(24% 0.012 205); }
+    }
+    .modal-close:active { transform: scale(0.90); }
+    .modal-close:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+
+    .modal-thumb {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: oklch(11% 0.016 210);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border-radius: 7px 7px 0 0;
+      overflow: hidden;
+      position: relative;
+    }
+    .modal-thumb::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 3px,
+        oklch(0% 0 0 / 0.05) 3px,
+        oklch(0% 0 0 / 0.05) 6px
+      );
+    }
+    .modal-thumb-icon {
+      width: 52px; height: 52px;
+      border: 1.5px solid oklch(95% 0.006 78 / 0.25);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+    }
+    .modal-thumb-label {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: oklch(38% 0.006 82);
+      position: relative;
+      z-index: 1;
+    }
+    .modal-body {
+      padding: 24px 28px 28px;
+    }
+    .modal-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .modal-brand {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.20em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .modal-cat-badge {
+      padding: 3px 9px;
+      border-radius: 30px;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+    }
+    .modal-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 38px;
+      line-height: 1.0;
+      letter-spacing: 0.02em;
+      color: var(--ink);
+      margin-bottom: 14px;
+    }
+    .modal-intro {
+      font-size: 15px;
+      font-weight: 400;
+      line-height: 1.78;
+      color: oklch(70% 0.007 82);
+      margin-bottom: 24px;
+    }
+    .modal-stats {
+      display: flex;
+      border-top: 1px solid var(--border-sub);
+      padding-top: 20px;
+      gap: 0;
+    }
+    .modal-stat {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      padding: 0 8px;
+    }
+    .modal-stat + .modal-stat { border-left: 1px solid var(--border-sub); }
+    .modal-stat-value {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px;
+      letter-spacing: 0.03em;
+      color: var(--ink);
+      line-height: 1;
+    }
+    .modal-stat-label {
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      .nav {
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        padding: 20px 20px;
+      }
+      .nav-links { gap: 20px; }
+      .nav-link { font-size: 12px; }
+
+      .page-header { padding: 120px 24px 32px; }
+      .filter-bar  { padding: 12px 24px; }
+
+      .carousel-track {
+        padding: 8px 24px 28px;
+        gap: 16px;
+      }
+      /* Show 1 full card + peek of next */
+      .work-card { width: calc(100vw - 88px); }
+
+      .carousel-controls { padding: 4px 24px 56px; }
+      .empty-state        { padding: 60px 24px; }
+
+      .modal { max-width: 100%; }
+      .modal-body { padding: 20px 20px 24px; }
+      .modal-title { font-size: 30px; }
+    }
+
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .nav         { padding: 24px 40px; }
+      .page-header { padding: 136px 40px 36px; }
+      .filter-bar  { padding: 13px 40px; }
+      .carousel-track   { padding: 8px 40px 28px; }
+      .carousel-controls { padding: 4px 40px 64px; }
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      .page-eyebrow, .page-title { animation: none; opacity: 1; transform: none; filter: none; }
+      .page-eyebrow::before { animation: none; transform: scaleX(1); }
+      .play-ring-wrap svg { animation: none; }
+      .work-card { transition: opacity 200ms; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="index.html" class="nav-logo">HH</a>
+  <div class="nav-links">
+    <a href="index.html#about" class="nav-link">About me</a>
+    <a href="work.html"        class="nav-link active">My Videos</a>
+    <a href="#contact"         class="nav-link">Contact</a>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<header class="page-header">
+  <p class="page-eyebrow">Selected projects</p>
+  <h1 class="page-title">My Videos</h1>
+</header>
+
+<!-- FILTER BAR -->
+<div class="filter-bar" id="filterBar">
+  <button class="filter-pill active" data-filter="all">All</button>
+  <button class="filter-pill" data-filter="short video">Short video</button>
+  <button class="filter-pill" data-filter="long video">Long video</button>
+  <button class="filter-pill" data-filter="music video">Music video</button>
+  <button class="filter-pill" data-filter="event recap">Event recap</button>
+  <button class="filter-pill" data-filter="sports highlights">Sports highlights</button>
+  <button class="filter-pill" data-filter="viral video">Viral video</button>
+</div>
+
+<!-- CAROUSEL -->
+<div class="carousel-wrap">
+  <div class="carousel-track" id="track"></div>
+  <p class="empty-state" id="emptyState">No projects in this category yet.</p>
+</div>
+
+<!-- CONTROLS -->
+<div class="carousel-controls">
+  <button class="arrow-btn" id="prevBtn" aria-label="Previous project">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.5"
+            stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+  <div class="dot-row" id="dotRow"></div>
+  <button class="arrow-btn" id="nextBtn" aria-label="Next project">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.5"
+            stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+</div>
+
+<!-- MODAL -->
+<div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal" id="modal">
+    <button class="modal-close" id="modalClose" aria-label="Close project">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
+        <path d="M1 1l11 11M12 1L1 12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+    </button>
+    <div class="modal-thumb" id="modalThumb">
+      <div class="modal-thumb-icon">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+          <polygon points="7,5 14,9 7,13" fill="oklch(95% 0.006 78 / 0.5)"/>
+        </svg>
+      </div>
+      <span class="modal-thumb-label">Video embed</span>
+    </div>
+    <div class="modal-body">
+      <div class="modal-meta">
+        <span class="modal-brand"  id="modalBrand"></span>
+        <span class="modal-cat-badge" id="modalBadge"></span>
+      </div>
+      <h2 class="modal-title"  id="modalTitleText"></h2>
+      <p  class="modal-intro"  id="modalIntro"></p>
+      <div class="modal-stats" id="modalStats"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ─── DATA ─── */
+const projects = [
+  {
+    id: 1, category: 'viral video',
+    brand: 'Junsport',
+    title: 'Basketball drill goes viral',
+    intro: 'A 30-second clip of a youth drill session that blew up overnight on TikTok and Instagram Reels, no paid boost.',
+    stats: [{ v: '2.4M', l: 'Views' }, { v: '18K', l: 'Shares' }, { v: '4.2%', l: 'Engagement' }],
+    duration: '0:32',
+    color: 'oklch(58% 0.14 66)',
+    bg:    'oklch(58% 0.14 66 / 0.15)',
+    thumbBg: 'oklch(12% 0.020 68)',
+  },
+  {
+    id: 2, category: 'sports highlights',
+    brand: 'HNBA',
+    title: 'Season finals: full match recap',
+    intro: 'High-energy edit of the Ha Noi Basketball Academy season finale. Fast cuts, on-court audio, motion titles.',
+    stats: [{ v: '180K', l: 'Views' }, { v: '6 min', l: 'Avg watch' }, { v: '92%', l: 'Retention' }],
+    duration: '3:45',
+    color: 'oklch(52% 0.10 250)',
+    bg:    'oklch(52% 0.10 250 / 0.15)',
+    thumbBg: 'oklch(12% 0.018 240)',
+  },
+  {
+    id: 3, category: 'short video',
+    brand: 'The God Mamba',
+    title: 'Product drop: 6-reel content series',
+    intro: 'Monthly short-form series for a Hanoi chef store. Each reel built around a single product with lifestyle framing.',
+    stats: [{ v: '820K', l: 'Reach' }, { v: '+340%', l: 'Engagement' }, { v: '6', l: 'Videos' }],
+    duration: '0:45',
+    color: 'oklch(55% 0.12 160)',
+    bg:    'oklch(55% 0.12 160 / 0.15)',
+    thumbBg: 'oklch(12% 0.018 165)',
+  },
+  {
+    id: 4, category: 'event recap',
+    brand: 'Clean & Healthy',
+    title: 'Brand launch event: full recap',
+    intro: 'Same-day edit delivered within 3 hours of event end. Covered keynote, crowd moments, and product reveal.',
+    stats: [{ v: '95K', l: 'Views' }, { v: '3 hrs', l: 'Turnaround' }, { v: '1 day', l: 'Shoot' }],
+    duration: '4:20',
+    color: 'oklch(56% 0.13 30)',
+    bg:    'oklch(56% 0.13 30 / 0.15)',
+    thumbBg: 'oklch(12% 0.020 32)',
+  },
+  {
+    id: 5, category: 'music video',
+    brand: 'Independent',
+    title: 'Nhịp: cinematic music film',
+    intro: 'Solo-produced music video shot across Hanoi over 5 nights. Handheld cinematography, natural light only.',
+    stats: [{ v: '310K', l: 'Views' }, { v: 'Solo', l: 'Crew' }, { v: '5', l: 'Nights' }],
+    duration: '4:12',
+    color: 'oklch(50% 0.10 310)',
+    bg:    'oklch(50% 0.10 310 / 0.15)',
+    thumbBg: 'oklch(12% 0.018 310)',
+  },
+  {
+    id: 6, category: 'long video',
+    brand: 'AJC',
+    title: 'Nhịp: student showcase film',
+    intro: 'Extended cut screened at the Academy of Journalism and Communication 2024 student showcase.',
+    stats: [{ v: '8 min', l: 'Runtime' }, { v: 'Solo', l: 'Production' }, { v: '2024', l: 'Screened' }],
+    duration: '8:10',
+    color: 'oklch(54% 0.11 145)',
+    bg:    'oklch(54% 0.11 145 / 0.15)',
+    thumbBg: 'oklch(12% 0.016 148)',
+  },
+];
+
+/* ─── STATE ─── */
+let activeFilter = 'all';
+let currentIdx   = 0;
+
+function visible() {
+  return activeFilter === 'all' ? projects : projects.filter(p => p.category === activeFilter);
+}
+
+/* ─── BUILD CARD HTML ─── */
+function cardHTML(p) {
+  const stats = p.stats.map(s => `
+    <div class="stat">
+      <span class="stat-value">${s.v}</span>
+      <span class="stat-label">${s.l}</span>
+    </div>`).join('');
+
+  return `
+    <article class="work-card" tabindex="0" role="button"
+             aria-label="Open project: ${p.title}"
+             data-id="${p.id}">
+      <div class="card-thumb" style="background:${p.thumbBg}">
+        <div class="play-ring-wrap" aria-hidden="true">
+          <svg viewBox="0 0 60 60" fill="none">
+            <circle cx="30" cy="30" r="26"
+                    stroke="oklch(95% 0.006 78 / 0.55)" stroke-width="1.4"/>
+            <polygon points="26,21 40,30 26,39"
+                     fill="oklch(95% 0.006 78 / 0.88)"/>
+          </svg>
+        </div>
+        <span class="card-badge"
+              style="color:${p.color};background:${p.bg}">${p.category}</span>
+        <span class="card-duration">${p.duration}</span>
+      </div>
+      <div class="card-body">
+        <p class="card-brand">${p.brand}</p>
+        <h2 class="card-title">${p.title}</h2>
+        <p class="card-intro">${p.intro}</p>
+        <div class="card-stats">${stats}</div>
+      </div>
+    </article>`;
+}
+
+/* ─── RENDER ─── */
+function render(animate) {
+  const list   = visible();
+  const track  = document.getElementById('track');
+  const empty  = document.getElementById('emptyState');
+
+  if (!list.length) {
+    track.innerHTML = '';
+    empty.style.display = 'block';
+    buildDots(0);
+    return;
+  }
+
+  empty.style.display = 'none';
+  track.innerHTML = list.map(cardHTML).join('');
+
+  const cards = track.querySelectorAll('.work-card');
+  cards.forEach((card, i) => {
+    card.style.transitionDelay = animate ? `${i * 80}ms` : '0ms';
+    requestAnimationFrame(() => requestAnimationFrame(() => card.classList.add('in')));
+    card.addEventListener('click',   () => openModal(+card.dataset.id));
+    card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(+card.dataset.id); } });
+  });
+
+  currentIdx = 0;
+  track.scrollLeft = 0;
+  buildDots(list.length);
+  syncControls();
+}
+
+/* ─── DOTS ─── */
+function buildDots(n) {
+  const row = document.getElementById('dotRow');
+  row.innerHTML = '';
+  for (let i = 0; i < n; i++) {
+    const btn = document.createElement('button');
+    btn.className = 'dot' + (i === 0 ? ' active' : '');
+    btn.setAttribute('aria-label', `Go to card ${i + 1}`);
+    btn.addEventListener('click', () => goTo(i));
+    row.appendChild(btn);
+  }
+}
+
+function syncDots() {
+  document.querySelectorAll('.dot').forEach((d, i) =>
+    d.classList.toggle('active', i === currentIdx));
+}
+
+function syncControls() {
+  const n = visible().length;
+  document.getElementById('prevBtn').disabled = currentIdx <= 0;
+  document.getElementById('nextBtn').disabled = currentIdx >= n - 1;
+  syncDots();
+}
+
+/* ─── NAVIGATION ─── */
+function cardStride() {
+  const card = document.querySelector('.work-card');
+  return card ? card.getBoundingClientRect().width + 22 : 338;
+}
+
+function goTo(idx) {
+  const n = visible().length;
+  currentIdx = Math.max(0, Math.min(idx, n - 1));
+  document.getElementById('track').scrollTo({ left: currentIdx * cardStride(), behavior: 'smooth' });
+  syncControls();
+}
+
+document.getElementById('prevBtn').addEventListener('click', () => goTo(currentIdx - 1));
+document.getElementById('nextBtn').addEventListener('click', () => goTo(currentIdx + 1));
+
+document.getElementById('track').addEventListener('scroll', () => {
+  const s = cardStride();
+  if (!s) return;
+  const idx = Math.round(document.getElementById('track').scrollLeft / s);
+  if (idx !== currentIdx) { currentIdx = idx; syncControls(); }
+}, { passive: true });
+
+/* Keyboard on track */
+document.addEventListener('keydown', e => {
+  if (document.getElementById('modalBackdrop').classList.contains('open')) return;
+  if (e.key === 'ArrowLeft')  goTo(currentIdx - 1);
+  if (e.key === 'ArrowRight') goTo(currentIdx + 1);
+});
+
+/* ─── FILTER ─── */
+document.getElementById('filterBar').addEventListener('click', e => {
+  const pill = e.target.closest('.filter-pill');
+  if (!pill || pill.dataset.filter === activeFilter) return;
+
+  const cards = document.querySelectorAll('.work-card');
+  cards.forEach(c => {
+    c.style.transition = 'opacity 150ms ease, transform 150ms ease';
+    c.style.opacity    = '0';
+    c.style.transform  = 'translateY(4px) scale(0.97)';
+  });
+
+  document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  pill.classList.add('active');
+  activeFilter = pill.dataset.filter;
+
+  setTimeout(() => render(true), 165);
+});
+
+/* ─── MODAL ─── */
+function openModal(id) {
+  const p = projects.find(x => x.id === id);
+  if (!p) return;
+
+  document.getElementById('modalBrand').textContent    = p.brand;
+  document.getElementById('modalTitleText').textContent = p.title;
+  document.getElementById('modalIntro').textContent    = p.intro;
+  document.getElementById('modalThumb').style.background = p.thumbBg;
+
+  const badge = document.getElementById('modalBadge');
+  badge.textContent = p.category;
+  badge.style.color      = p.color;
+  badge.style.background = p.bg;
+
+  document.getElementById('modalStats').innerHTML = p.stats.map(s => `
+    <div class="modal-stat">
+      <span class="modal-stat-value">${s.v}</span>
+      <span class="modal-stat-label">${s.l}</span>
+    </div>`).join('');
+
+  document.getElementById('modalBackdrop').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  document.getElementById('modalClose').focus();
+}
+
+function closeModal() {
+  document.getElementById('modalBackdrop').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('modalClose').addEventListener('click', closeModal);
+document.getElementById('modalBackdrop').addEventListener('click', e => {
+  if (e.target.id === 'modalBackdrop') closeModal();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+
+/* ─── INIT ─── */
+render(true);
+</script>
+</body>
+</html>

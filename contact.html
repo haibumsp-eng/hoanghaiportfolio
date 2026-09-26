@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact — Hoang Hai</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── TOKENS ─── */
+    :root {
+      --ease-out:   cubic-bezier(0.23, 1, 0.32, 1);
+      --ease-inout: cubic-bezier(0.77, 0, 0.175, 1);
+      --ink:        oklch(95%  0.006 78);
+      --muted:      oklch(60%  0.007 82);
+      --amber:      oklch(72%  0.12  66);
+      --bg:         oklch(9%   0.018 205);
+      --surface:    oklch(14%  0.016 205);
+      --surface-2:  oklch(19%  0.013 205);
+      --border:     oklch(24%  0.012 205);
+      --border-sub: oklch(17%  0.013 205);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      height: 100%;
+      overflow: hidden; /* single viewport, no scroll */
+    }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    /* ─── NAV ─── */
+    .nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 32px 56px;
+      transition:
+        background   500ms var(--ease-out),
+        padding      500ms var(--ease-out);
+    }
+    .nav.is-solid {
+      background: oklch(9% 0.018 205 / 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-sub);
+      padding: 20px 56px;
+    }
+    .nav-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: 0.08em;
+      color: var(--ink);
+      text-decoration: none;
+    }
+    .nav-links { display: flex; align-items: center; gap: 44px; }
+    .nav-link {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: oklch(84% 0.005 80);
+      text-decoration: none;
+      transition: opacity 280ms var(--ease-out), color 280ms var(--ease-out);
+    }
+    .nav-link:hover { opacity: 0.5; }
+    .nav-link.active { color: var(--amber); }
+    .nav-link:focus-visible { outline: 2px solid var(--amber); outline-offset: 4px; border-radius: 2px; }
+
+    /* ─── PAGE LAYOUT ─── */
+    .page {
+      display: grid;
+      grid-template-columns: 40% 60%;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ─── LEFT COLUMN ─── */
+    .col-left {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      padding: 140px 48px 0 56px;
+      overflow: visible;
+      opacity: 0;
+      transform: translateX(-24px);
+      animation: slideLeft 500ms var(--ease-out) 0ms forwards;
+    }
+
+    .identity {
+      flex-shrink: 0;
+    }
+
+    .contact-name {
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink);
+      margin-bottom: 6px;
+    }
+
+    .contact-role {
+      font-size: 12px;
+      font-weight: 300;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* Photo — bleeds past bottom, masked with gradient */
+    .photo-wrap {
+      flex: 1;
+      margin-top: 40px;
+      position: relative;
+      overflow: visible;
+      opacity: 0;
+      animation: fadeIn 600ms var(--ease-out) 200ms forwards;
+    }
+
+    .photo-wrap img {
+      display: block;
+      width: 100%;
+      height: calc(100vh - 200px); /* tall enough to bleed past viewport */
+      object-fit: cover;
+      object-position: center top;
+      -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+      mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+    }
+
+    /* ─── RIGHT COLUMN ─── */
+    .col-right {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 100px 72px 80px 64px;
+      opacity: 0;
+      transform: translateX(24px);
+      animation: slideRight 500ms var(--ease-out) 100ms forwards;
+    }
+
+    /* Heading */
+    .contact-heading {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(48px, 5.5vw, 80px);
+      line-height: 1;
+      letter-spacing: 0.02em;
+      color: var(--ink);
+      max-width: 560px;
+      margin-bottom: 48px;
+      opacity: 0;
+      animation: fadeUp 400ms var(--ease-out) 150ms forwards;
+    }
+
+    /* Email pill */
+    .email-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 18px 12px 22px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 400;
+      letter-spacing: 0.01em;
+      color: var(--ink);
+      cursor: pointer;
+      background: transparent;
+      font-family: 'Inter', system-ui, sans-serif;
+      align-self: flex-start;
+      transition: border-color 200ms ease, background 200ms ease;
+      opacity: 0;
+      animation: fadeIn 300ms var(--ease-out) 300ms forwards;
+      margin-bottom: 20px;
+    }
+    @media (hover: hover) and (pointer: fine) {
+      .email-pill:hover {
+        border-color: var(--border);
+        background: var(--surface);
+      }
+    }
+    .email-pill:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; border-radius: 999px; }
+
+    .email-copy-icon {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      color: var(--muted);
+      transition: color 150ms ease, border-color 150ms ease, background 150ms ease;
+    }
+    .email-pill:hover .email-copy-icon {
+      color: var(--ink);
+      border-color: oklch(40% 0.01 205);
+    }
+    .email-pill.copied .email-copy-icon {
+      color: oklch(72% 0.12 145);
+      border-color: oklch(72% 0.12 145);
+    }
+
+    /* Contact buttons row */
+    .contact-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Individual button/tag */
+    .contact-tag {
+      display: inline-block;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      color: var(--ink);
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 0;
+      text-decoration: none;
+      cursor: default;
+      transition: background 150ms ease, color 150ms ease, border-color 150ms ease;
+      opacity: 0;
+    }
+    a.contact-tag {
+      cursor: pointer;
+    }
+    @media (hover: hover) and (pointer: fine) {
+      a.contact-tag:hover {
+        background: var(--ink);
+        color: var(--bg);
+        border-color: var(--ink);
+      }
+    }
+    a.contact-tag:active { transform: scale(0.97); }
+    a.contact-tag:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+
+    /* Stagger animation for buttons */
+    .contact-buttons .contact-tag:nth-child(1) { animation: fadeIn 280ms var(--ease-out) 400ms forwards; }
+    .contact-buttons .contact-tag:nth-child(2) { animation: fadeIn 280ms var(--ease-out) 460ms forwards; }
+    .contact-buttons .contact-tag:nth-child(3) { animation: fadeIn 280ms var(--ease-out) 520ms forwards; }
+
+    /* ─── KEYFRAMES ─── */
+    @keyframes slideLeft {
+      from { opacity: 0; transform: translateX(-24px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes slideRight {
+      from { opacity: 0; transform: translateX(24px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    /* ─── TABLET: 769px – 1024px ─── */
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .page { grid-template-columns: 35% 65%; }
+      .nav  { padding: 28px 40px; }
+      .nav.is-solid { padding: 18px 40px; }
+      .col-left  { padding: 120px 32px 0 40px; }
+      .col-right { padding: 90px 40px 60px 40px; }
+    }
+
+    /* ─── MOBILE: ≤768px ─── */
+    @media (max-width: 768px) {
+      html, body { overflow: auto; height: auto; }
+
+      .nav { padding: 20px 24px; }
+      .nav.is-solid { padding: 14px 24px; }
+      .nav-links { gap: 24px; }
+      .nav-link { font-size: 10px; }
+
+      .page {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto;
+        height: auto;
+        overflow: visible;
+      }
+
+      .col-left {
+        padding: 100px 24px 0;
+        /* override desktop animation to static */
+        animation: none;
+        opacity: 1;
+        transform: none;
+      }
+
+      .photo-wrap {
+        animation: none;
+        opacity: 1;
+        margin-top: 32px;
+      }
+
+      .photo-wrap img {
+        height: 300px;
+        object-position: center 20%;
+        -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+        mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+      }
+
+      .col-right {
+        padding: 40px 24px 64px;
+        animation: none;
+        opacity: 1;
+        transform: none;
+        justify-content: flex-start;
+      }
+
+      .contact-heading {
+        animation: none;
+        opacity: 1;
+        font-size: clamp(40px, 11vw, 56px);
+        margin-bottom: 32px;
+      }
+
+      .email-pill {
+        animation: none;
+        opacity: 1;
+        width: 100%;
+        justify-content: space-between;
+        font-size: 13px;
+      }
+
+      .contact-buttons {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .contact-tag {
+        width: 100%;
+        text-align: center;
+      }
+
+      .contact-buttons .contact-tag {
+        animation: none;
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="nav" role="navigation" aria-label="Main navigation">
+  <a href="index.html" class="nav-logo" aria-label="HH — home">HH</a>
+  <div class="nav-links">
+    <a href="index.html#about" class="nav-link">About me</a>
+    <a href="index.html#work"  class="nav-link">My Videos</a>
+    <a href="contact.html"     class="nav-link active">Contact</a>
+  </div>
+</nav>
+
+<!-- PAGE -->
+<div class="page">
+
+  <!-- LEFT COLUMN -->
+  <div class="col-left">
+    <div class="identity">
+      <p class="contact-name">Hoang Hai</p>
+      <p class="contact-role">Creative Strategist</p>
+    </div>
+    <div class="photo-wrap">
+      <img src="HERO%20PAGE/my%20photo_4.jpg"
+           alt="Hoang Hai — creative strategist"
+           draggable="false" />
+    </div>
+  </div>
+
+  <!-- RIGHT COLUMN -->
+  <div class="col-right">
+
+    <h1 class="contact-heading">Let's get to know each other</h1>
+
+    <!-- Email pill with copy -->
+    <button class="email-pill" id="emailPill"
+            aria-label="Copy email address hhai10.fm@gmail.com">
+      <span>hhai10.fm@gmail.com</span>
+      <span class="email-copy-icon" id="copyIcon" aria-hidden="true">
+        <!-- Copy icon -->
+        <svg id="iconCopy" width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <rect x="5" y="1" width="8" height="9" rx="1" stroke="currentColor" stroke-width="1.3"/>
+          <path d="M1 5h3M1 5v7a1 1 0 0 0 1 1h6v-3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <!-- Check icon — hidden by default -->
+        <svg id="iconCheck" width="14" height="14" viewBox="0 0 14 14" fill="none"
+             style="display:none;">
+          <path d="M2.5 7l3 3 6-6" stroke="currentColor" stroke-width="1.5"
+                stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+    </button>
+
+    <!-- Contact buttons -->
+    <div class="contact-buttons" role="list">
+      <span class="contact-tag" role="listitem" aria-label="Phone number">
+        +84 347 644 517
+      </span>
+      <a class="contact-tag" role="listitem"
+         href="https://www.linkedin.com/in/h%E1%BA%A3i-ho%C3%A0ng-823042310/"
+         target="_blank" rel="noopener noreferrer">
+        LinkedIn ↗
+      </a>
+      <a class="contact-tag" role="listitem"
+         href="https://www.instagram.com/haibum.sp"
+         target="_blank" rel="noopener noreferrer">
+        Instagram ↗
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  /* ── Nav scroll ── */
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('is-solid', scrollY > 30);
+  }, { passive: true });
+
+  /* ── Email copy ── */
+  const pill      = document.getElementById('emailPill');
+  const iconCopy  = document.getElementById('iconCopy');
+  const iconCheck = document.getElementById('iconCheck');
+  let   copyTimer = null;
+
+  pill.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText('hhai10.fm@gmail.com');
+    } catch (_) {
+      /* fallback for older browsers */
+      const ta = document.createElement('textarea');
+      ta.value = 'hhai10.fm@gmail.com';
+      ta.style.cssText = 'position:fixed;opacity:0;';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    }
+
+    iconCopy.style.display  = 'none';
+    iconCheck.style.display = '';
+    pill.classList.add('copied');
+
+    clearTimeout(copyTimer);
+    copyTimer = setTimeout(() => {
+      iconCopy.style.display  = '';
+      iconCheck.style.display = 'none';
+      pill.classList.remove('copied');
+    }, 2000);
+  });
+</script>
+
+</body>
+</html>

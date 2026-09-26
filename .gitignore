@@ -1,0 +1,54 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Video files
+*.mov
+*.mp4
+*.avi
+*.mkv
+
+# Node
+node_modules/
+.env
+
+# Dev tools
+temporary screenshots/
+screenshot-*.mjs
+serve.mjs
+
+# All media except what the site actually uses
+HERO PAGE/*
+!HERO PAGE/IMG_7109.JPG
+!HERO PAGE/my photo_4.jpg
+!HERO PAGE/My photo 3.png
+
+MY WORK/*
+MY WORK/**/*
+!MY WORK/JUN/JET/JET4 VIDEO/IMG_7133.JPG
+!MY WORK/JUN/JET/JET4 VIDEO/IMG_7211.JPG
+
+# Unused project files
+Design/
+Claude (1).md
+*.md.bak
+ref/
+
+# Source / draft files kept locally only
+hf_*
+*.docx
+*.zip
+/*.jpg
+mobile-light.png
+PROJECTS/Screenshot*
+PROJECTS-CONTENT.md
+foliom-card-demo.html
+assets/fonts/
+SKILL/
+.claude/
+package.json
+package-lock.json
+screenshot.mjs
+
+# local copy of the deploy files
+PUSH TO GITHUB/
